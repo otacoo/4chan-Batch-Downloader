@@ -3,6 +3,9 @@
 Batch download images and videos from 4chan with ease.  
 Select images by ALT+CLICK (or your chosen modifier), then download them all at once with a single click.
 
+Need a userscript instead?
+Check out: [@3nly's](https://gist.github.com/3nly/907b94181d75a39c5effb622266360df) userscript
+
 
 ## Features
 
@@ -65,7 +68,7 @@ Make sure the option is enabled in the Options page.
 
 
 ## Credits
-
+- Inspired by @3nly in (https://github.com/3nly/StyleChan/issues/17#issuecomment-2890742407)
 - [JSZip](https://stuk.github.io/jszip/) for ZIP functionality.
 - 4chan
 
