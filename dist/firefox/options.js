@@ -82,20 +82,29 @@ document.addEventListener('DOMContentLoaded', () => {
     boardFoldersBody.innerHTML = '';
     Object.entries(boardFolders).forEach(([board, folder]) => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${board}</td>
-        <td>${folder}</td>
-        <td><span class="remove-btn" data-board="${board}">Remove</span></td>
-      `;
-      boardFoldersBody.appendChild(tr);
-    });
-    // Attach remove handlers
-    Array.from(document.querySelectorAll('.remove-btn')).forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const board = btn.getAttribute('data-board');
+
+      const tdBoard = document.createElement('td');
+      tdBoard.textContent = board;
+
+      const tdFolder = document.createElement('td');
+      tdFolder.textContent = folder;
+
+      const tdRemove = document.createElement('td');
+      const removeBtn = document.createElement('span');
+      removeBtn.className = 'remove-btn';
+      removeBtn.setAttribute('data-board', board);
+      removeBtn.textContent = 'Remove';
+      removeBtn.addEventListener('click', () => {
         delete boardFolders[board];
         renderBoardFolders();
       });
+      tdRemove.appendChild(removeBtn);
+
+      tr.appendChild(tdBoard);
+      tr.appendChild(tdFolder);
+      tr.appendChild(tdRemove);
+
+      boardFoldersBody.appendChild(tr);
     });
   }
 

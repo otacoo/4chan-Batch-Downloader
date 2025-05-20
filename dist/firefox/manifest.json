@@ -3,6 +3,12 @@
     "name": "4chan Batch Downloader",
     "version": "1.0.0",
     "description": "Batch download media from 4chan by ALT+CLICKing thumbnails.",
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "otacoo@4chan-batch-downloader.org",
+            "strict_min_version": "124.0"
+        }
+    },
     "permissions": [
         "downloads",
         "storage",
@@ -12,7 +18,9 @@
         "*://*/*"
     ],
     "background": {
-        "scripts": ["background.js"]
+        "scripts": [
+            "background.js"
+        ]
     },
     "content_scripts": [
         {
