@@ -1,20 +1,20 @@
 import JSZip from './vendor/jszip-esm.js';
 
 /**
- * 4chan Batch Downloader Addon - Background Script
+ * 4chins Batch Downloader Addon - Background Script
  */
 
 // Extension default settings
 const DEFAULTS = {
   modifierKey: 'alt',
-  useOriginalFilenames: true,
+  useOriginalFilenames: false,
   showNoDialogBtn: false,
   showIndividualBtn: true,
   showZipBtn: true,
   buttonPosition: 'top-right',
   zipNameAddDate: false,
   zipNameAddBoard: false,
-  zipNameAddCount: true,
+  zipNameAddCount: false,
   imageThreshold: 20,
   timeoutSeconds: 2,
   defaultFolder: '',
@@ -180,7 +180,7 @@ async function zipAndDownloadImages(files, folder, opts, tabId, imageThreshold =
     return 'cancelled';
   }
   // Build zip filename
-  let zipNameParts = ['4chan'];
+  let zipNameParts = ['4BD'];
   if (opts.zipNameAddBoard) {
     const board = getBoardNameFromFiles(files);
     if (board) zipNameParts.push(board);

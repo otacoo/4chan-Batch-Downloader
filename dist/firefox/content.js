@@ -1,5 +1,5 @@
 /**
- * 4chan Batch Downloader Addon
+ * 4chins Batch Downloader Addon
  */
 
 (function () {

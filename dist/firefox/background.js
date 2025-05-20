@@ -3513,14 +3513,14 @@
   // src/background.js
   var DEFAULTS = {
     modifierKey: "alt",
-    useOriginalFilenames: true,
+    useOriginalFilenames: false,
     showNoDialogBtn: false,
     showIndividualBtn: true,
     showZipBtn: true,
     buttonPosition: "top-right",
     zipNameAddDate: false,
     zipNameAddBoard: false,
-    zipNameAddCount: true,
+    zipNameAddCount: false,
     imageThreshold: 20,
     timeoutSeconds: 2,
     defaultFolder: "",
@@ -3668,7 +3668,7 @@
         chrome.tabs.sendMessage(tabId, { type: "fetch-cancelled" });
       return "cancelled";
     }
-    let zipNameParts = ["4chan"];
+    let zipNameParts = ["4BD"];
     if (opts.zipNameAddBoard) {
       const board = getBoardNameFromFiles(files);
       if (board)
