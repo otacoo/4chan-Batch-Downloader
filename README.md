@@ -1,6 +1,6 @@
 # 4chan-Multi-Image-Downloader ![icon48](https://github.com/user-attachments/assets/b53cb537-c3d6-48a9-bdef-d71433f34228)
 
-Batch download images and videos from 4chan with ease.  
+Browser addon to batch download images and videos from 4chan with ease.  
 Select images by ALT+CLICK (or your chosen modifier), then download them all at once with a single click.
 
 Need a userscript instead?
