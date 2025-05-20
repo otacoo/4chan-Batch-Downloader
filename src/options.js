@@ -1,4 +1,9 @@
+/**
+ * 4chins Batch Downloader Addon - Options Script
+ */
+
 document.addEventListener('DOMContentLoaded', () => {
+  // --- DOM Elements ---
   const modifierKeySelect = document.getElementById('modifierKey');
   const useOriginalFilenames = document.getElementById('useOriginalFilenames');
   const showNoDialogBtn = document.getElementById('showNoDialogBtn');
@@ -18,8 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const resetBtn = document.getElementById('resetOptions');
   // Styling
   const buttonPositionSelect = document.getElementById('buttonPosition');
+  const showNoDialogNote = document.getElementById('noDialogNote');
 
-  // Default values
+  // --- Default values ---
   const DEFAULTS = {
     modifierKey: 'alt',
     useOriginalFilenames: true,
@@ -38,28 +44,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let boardFolders = {};
 
-  // Load saved options
-  chrome.storage.sync.get([
-    'modifierKey', 'showNoDialogBtn', 'showIndividualBtn', 'showZipBtn', 'defaultFolder', 'boardFolders',
-    'zipNameAddDate', 'zipNameAddBoard', 'zipNameAddCount',
-    'imageThreshold', 'timeoutSeconds', 'buttonPosition', 'useOriginalFilenames'
-  ], (items) => {
-    if (items.modifierKey) modifierKeySelect.value = items.modifierKey;
-    useOriginalFilenames.checked = !!items.useOriginalFilenames;
-    buttonPositionSelect.value = items.buttonPosition || 'top-right';
-    showNoDialogBtn.checked = !!items.showNoDialogBtn;
-    showIndividualBtn.checked = items.showIndividualBtn !== false; // default true
-    showZipBtn.checked = !!items.showZipBtn;
-    defaultFolderInput.value = items.defaultFolder || '';
-    boardFolders = items.boardFolders || {};
-    zipNameAddDate.checked = !!items.zipNameAddDate;
-    zipNameAddBoard.checked = !!items.zipNameAddBoard;
-    zipNameAddCount.checked = !!items.zipNameAddCount;
-    imageThresholdInput.value = typeof items.imageThreshold === 'number' ? items.imageThreshold : 20;
-    timeoutSecondsInput.value = typeof items.timeoutSeconds === 'number' ? items.timeoutSeconds : 2;
+  // --- Utility: Fallback to default for missing keys ---
+  function getOption(items, key) {
+    if (typeof DEFAULTS[key] === 'boolean')
+      return typeof items[key] === 'boolean' ? items[key] : DEFAULTS[key];
+    if (typeof DEFAULTS[key] === 'number')
+      return typeof items[key] === 'number' ? items[key] : DEFAULTS[key];
+    if (typeof DEFAULTS[key] === 'string')
+      return typeof items[key] === 'string' ? items[key] : DEFAULTS[key];
+    if (typeof DEFAULTS[key] === 'object')
+      return typeof items[key] === 'object' && items[key] !== null ? items[key] : DEFAULTS[key];
+    return DEFAULTS[key];
+  }
+
+  // --- Load saved options (with robust fallback) ---
+  chrome.storage.sync.get(Object.keys(DEFAULTS), (items) => {
+    items = items || {};
+    modifierKeySelect.value = getOption(items, 'modifierKey');
+    useOriginalFilenames.checked = getOption(items, 'useOriginalFilenames');
+    showNoDialogBtn.checked = getOption(items, 'showNoDialogBtn');
+    showIndividualBtn.checked = getOption(items, 'showIndividualBtn');
+    showZipBtn.checked = getOption(items, 'showZipBtn');
+    buttonPositionSelect.value = getOption(items, 'buttonPosition');
+    zipNameAddDate.checked = getOption(items, 'zipNameAddDate');
+    zipNameAddBoard.checked = getOption(items, 'zipNameAddBoard');
+    zipNameAddCount.checked = getOption(items, 'zipNameAddCount');
+    imageThresholdInput.value = getOption(items, 'imageThreshold');
+    timeoutSecondsInput.value = getOption(items, 'timeoutSeconds');
+    defaultFolderInput.value = getOption(items, 'defaultFolder');
+    boardFolders = getOption(items, 'boardFolders');
     renderBoardFolders();
+    toggleNoDialogNote();
   });
 
+  // --- Board folders table rendering ---
   function renderBoardFolders() {
     boardFoldersBody.innerHTML = '';
     Object.entries(boardFolders).forEach(([board, folder]) => {
@@ -92,7 +110,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Reset handler
+  // --- Save Options (submit) ---
+  document.getElementById('options-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    chrome.storage.sync.set({
+      modifierKey: modifierKeySelect.value,
+      useOriginalFilenames: useOriginalFilenames.checked,
+      showNoDialogBtn: showNoDialogBtn.checked,
+      showIndividualBtn: showIndividualBtn.checked,
+      showZipBtn: showZipBtn.checked,
+      buttonPosition: buttonPositionSelect.value,
+      zipNameAddDate: zipNameAddDate.checked,
+      zipNameAddBoard: zipNameAddBoard.checked,
+      zipNameAddCount: zipNameAddCount.checked,
+      imageThreshold: parseInt(imageThresholdInput.value, 10) || DEFAULTS.imageThreshold,
+      timeoutSeconds: parseInt(timeoutSecondsInput.value, 10) || DEFAULTS.timeoutSeconds,
+      defaultFolder: defaultFolderInput.value,
+      boardFolders: boardFolders
+    }, () => {
+      status.textContent = 'Options saved!';
+      setTimeout(() => status.textContent = '', 1500);
+    });
+  });
+
+  // --- Reset handler ---
   resetBtn.addEventListener('click', () => {
     if (!confirm('Reset all options to default values?')) return;
     chrome.storage.sync.set(DEFAULTS, () => {
@@ -113,43 +154,14 @@ document.addEventListener('DOMContentLoaded', () => {
       renderBoardFolders();
       status.textContent = 'Options reset to defaults!';
       setTimeout(() => status.textContent = '', 1500);
-      // Also update the noDialogNote visibility
-      if (typeof toggleNoDialogNote === 'function') toggleNoDialogNote();
+      toggleNoDialogNote();
     });
   });
 
-  // Save Options (submit)
-  document.getElementById('options-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    chrome.storage.sync.set({
-      buttonPosition: buttonPositionSelect.value,
-      modifierKey: modifierKeySelect.value,
-      useOriginalFilenames: useOriginalFilenames.checked,
-      showNoDialogBtn: showNoDialogBtn.checked,
-      showIndividualBtn: showIndividualBtn.checked,
-      showZipBtn: showZipBtn.checked,
-      defaultFolder: defaultFolderInput.value,
-      boardFolders: boardFolders,
-      zipNameAddDate: zipNameAddDate.checked,
-      zipNameAddBoard: zipNameAddBoard.checked,
-      zipNameAddCount: zipNameAddCount.checked,
-      imageThreshold: parseInt(imageThresholdInput.value, 10) || 20,
-      timeoutSeconds: parseInt(timeoutSecondsInput.value, 10) || 2
-    }, () => {
-      status.textContent = 'Options saved!';
-      setTimeout(() => status.textContent = '', 1500);
-    });
-  });
-});
-
-// Show Note on checkbox tick
-document.addEventListener('DOMContentLoaded', function () {
-  const showNoDialogBtn = document.getElementById('showNoDialogBtn');
-  const noDialogNote = document.getElementById('noDialogNote');
+  // --- Show Note on checkbox tick ---
   function toggleNoDialogNote() {
-    noDialogNote.style.display = showNoDialogBtn.checked ? 'block' : 'none';
+    if (!showNoDialogNote) return;
+    showNoDialogNote.style.display = showNoDialogBtn.checked ? 'block' : 'none';
   }
   showNoDialogBtn.addEventListener('change', toggleNoDialogNote);
-  // Initialize on load (in case the box is checked from saved settings)
-  toggleNoDialogNote();
 });
