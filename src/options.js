@@ -28,14 +28,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Default values ---
   const DEFAULTS = {
     modifierKey: 'alt',
-    useOriginalFilenames: true,
+    useOriginalFilenames: false,
     showNoDialogBtn: false,
     showIndividualBtn: true,
-    showZipBtn: false,
+    showZipBtn: true,
     buttonPosition: 'top-right',
     zipNameAddDate: false,
     zipNameAddBoard: false,
-    zipNameAddCount: true,
+    zipNameAddCount: false,
     imageThreshold: 20,
     timeoutSeconds: 2,
     defaultFolder: '',
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return DEFAULTS[key];
   }
 
-  // --- Load saved options (with robust fallback) ---
+  // --- Load saved options ---
   chrome.storage.sync.get(Object.keys(DEFAULTS), (items) => {
     items = items || {};
     modifierKeySelect.value = getOption(items, 'modifierKey');

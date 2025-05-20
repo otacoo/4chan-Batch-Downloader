@@ -7,10 +7,10 @@ import JSZip from './vendor/jszip-esm.js';
 // Extension default settings
 const DEFAULTS = {
   modifierKey: 'alt',
-  useOriginalFilenames: true,
+  useOriginalFilenames: false,
   showNoDialogBtn: false,
   showIndividualBtn: true,
-  showZipBtn: false,
+  showZipBtn: true,
   buttonPosition: 'top-right',
   zipNameAddDate: false,
   zipNameAddBoard: false,
