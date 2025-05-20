@@ -33,7 +33,7 @@ Alternatively,
 
 ### Firefox
 
-`¯\_(ツ)_/¯`
+`¯\_(ツ)_/¯` Wait for the addon to be approved...
 
 1. Download `4chan-multi-image-downloader-firefox.zip` from [Releases](https://github.com/otacoo/4chan-Batch-Downloader/releases/latest) or the `dist` folder
 2. Go into Firefox's Addons page, click the gear icon and select Debug Addons or browse to `about:debugging`
