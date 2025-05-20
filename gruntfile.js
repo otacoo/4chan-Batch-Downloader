@@ -1,29 +1,55 @@
+const fs = require('fs');
+const path = require('path');
+const esbuild = require('esbuild');
+
 module.exports = function (grunt) {
-  const esbuild = require('esbuild');
+  // Helper: Bump version string
+  function bumpVersion(version, type) {
+    let [major, minor, patch] = version.split('.').map(Number);
+    if (type === 'major') {
+      major += 1; minor = 0; patch = 0;
+    } else if (type === 'minor') {
+      minor += 1; patch = 0;
+    } else {
+      patch += 1;
+    }
+    return [major, minor, patch].join('.');
+  }
+
+  // Helper: Update manifest version
+  function updateManifest(manifestPath, newVersion) {
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    manifest.version = newVersion;
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+  }
+
+  // Helper: Update CHANGELOG.md
+  function updateChangelog(newVersion) {
+    const changelogPath = path.join(__dirname, 'CHANGELOG.md');
+    const date = new Date().toISOString().slice(0, 10);
+    let changelog = '';
+    if (fs.existsSync(changelogPath)) {
+      changelog = fs.readFileSync(changelogPath, 'utf8');
+    }
+    const newEntry = `## [${newVersion}] - ${date}\n- No details provided.\n\n`;
+    fs.writeFileSync(changelogPath, newEntry + changelog);
+  }
 
   grunt.initConfig({
     copy: {
       chrome: {
         files: [
-          // Copy all source files except manifests and background.js
           { expand: true, cwd: 'src/', src: ['**', '!manifest.*.json', '!background.js'], dest: 'dist/chrome/' },
-          // Copy Chrome manifest
           { src: 'src/manifest.chrome.json', dest: 'dist/chrome/manifest.json' },
-          // Copy icons
           { expand: true, cwd: 'icons/', src: ['**'], dest: 'dist/chrome/icons/' },
-          // Copy background.js as-is for Chrome (ESM)
           { src: 'src/background.js', dest: 'dist/chrome/background.js' }
         ]
       },
       firefox: {
         files: [
-          // Copy all source files except manifests and background.js
           { expand: true, cwd: 'src/', src: ['**', '!manifest.*.json', '!background.js'], dest: 'dist/firefox/' },
-          // Copy Firefox manifest
           { src: 'src/manifest.firefox.json', dest: 'dist/firefox/manifest.json' },
-          // Copy icons
           { expand: true, cwd: 'icons/', src: ['**'], dest: 'dist/firefox/icons/' }
-          // background.js will be bundled by esbuild
         ]
       }
     },
@@ -39,7 +65,13 @@ module.exports = function (grunt) {
       firefox: {
         cwd: 'dist/firefox/',
         src: ['dist/firefox/**'],
-        dest: 'dist/4chan-batch-downloader-firefox.zip', // <-- changed from .xpi to .zip
+        dest: 'dist/4chan-batch-downloader-firefox.zip',
+        compression: 'DEFLATE'
+      },
+      firefox_xpi: {
+        cwd: 'dist/firefox/',
+        src: ['dist/firefox/**'],
+        dest: 'dist/4chan-batch-downloader-firefox.xpi',
         compression: 'DEFLATE'
       }
     }
@@ -58,9 +90,24 @@ module.exports = function (grunt) {
       outfile: 'dist/firefox/background.js',
       format: 'iife', // Firefox background scripts must not be modules
       platform: 'browser',
-      target: ['chrome58', 'firefox57'],
-      // external: [], // add if you want to exclude some deps
+      target: ['chrome88', 'firefox109'],
     }).then(() => done(), err => done(err));
+  });
+
+  // Version bump task
+  grunt.registerTask('bump-version', 'Bump version and update CHANGELOG.md', function (type) {
+    const manifestChromePath = path.join(__dirname, 'src/manifest.chrome.json');
+    const manifestFirefoxPath = path.join(__dirname, 'src/manifest.firefox.json');
+    const manifest = JSON.parse(fs.readFileSync(manifestChromePath, 'utf8'));
+    const currentVersion = manifest.version;
+    const bumpType = type || 'patch';
+    const newVersion = bumpVersion(currentVersion, bumpType);
+
+    grunt.log.writeln(`Bumping version: ${currentVersion} -> ${newVersion}`);
+
+    updateManifest(manifestChromePath, newVersion);
+    updateManifest(manifestFirefoxPath, newVersion);
+    updateChangelog(newVersion);
   });
 
   // Build tasks
@@ -69,5 +116,11 @@ module.exports = function (grunt) {
   grunt.registerTask('build', ['clean', 'copy:chrome', 'copy:firefox', 'esbuild:firefox']);
   grunt.registerTask('pack:chrome', ['build:chrome', 'zip:chrome']);
   grunt.registerTask('pack:firefox', ['build:firefox', 'zip:firefox']);
-  grunt.registerTask('pack', ['build', 'zip:chrome', 'zip:firefox']); // Builds and zips both
+  grunt.registerTask('pack:firefox:xpi', ['build:firefox', 'zip:firefox_xpi']);
+  grunt.registerTask('pack', ['build', 'zip:chrome', 'zip:firefox', 'zip:firefox_xpi']); // Builds and zips both, including .xpi
+
+  // Version bump aliases
+  grunt.registerTask('release:patch', ['bump-version:patch']);
+  grunt.registerTask('release:minor', ['bump-version:minor']);
+  grunt.registerTask('release:major', ['bump-version:major']);
 };
