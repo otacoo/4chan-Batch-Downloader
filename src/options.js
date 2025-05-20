@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     useOriginalFilenames: true,
     showNoDialogBtn: false,
     showIndividualBtn: true,
-    showZipBtn: true,
+    showZipBtn: false,
     buttonPosition: 'top-right',
     zipNameAddDate: false,
     zipNameAddBoard: false,

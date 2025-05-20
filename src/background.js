@@ -10,11 +10,11 @@ const DEFAULTS = {
   useOriginalFilenames: true,
   showNoDialogBtn: false,
   showIndividualBtn: true,
-  showZipBtn: true,
+  showZipBtn: false,
   buttonPosition: 'top-right',
   zipNameAddDate: false,
   zipNameAddBoard: false,
-  zipNameAddCount: true,
+  zipNameAddCount: false,
   imageThreshold: 20,
   timeoutSeconds: 2,
   defaultFolder: '',
@@ -180,7 +180,7 @@ async function zipAndDownloadImages(files, folder, opts, tabId, imageThreshold =
     return 'cancelled';
   }
   // Build zip filename
-  let zipNameParts = ['4chan'];
+  let zipNameParts = ['4BD'];
   if (opts.zipNameAddBoard) {
     const board = getBoardNameFromFiles(files);
     if (board) zipNameParts.push(board);
