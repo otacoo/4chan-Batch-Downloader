@@ -24,7 +24,7 @@ Select images by ALT+CLICK (or your chosen modifier), then download them all at 
 
 ### Chrome
 
-1. Download `4chan-multi-image-downloader-chrome.zip` from Releases or the `dist` folder
+1. Download `4chan-multi-image-downloader-chrome.zip` from [Releases](https://github.com/otacoo/4chan-Batch-Downloader/releases/latest) or the `dist` folder
 2. Drag & drop the zip into the Extensions page to install
 
 Alternatively,
@@ -35,20 +35,15 @@ Alternatively,
 
 `¯\_(ツ)_/¯`
 
-1. Download `4chan-multi-image-downloader-firefox.zip` from Releases or the `dist` folder
-2. Unzip the file
-3. Go into Firefox's Addons page, click the gear icon and select Debug Addons or browse to `about:debugging`
-
-![firekeks](https://github.com/user-attachments/assets/d561b057-a146-49c4-b93b-b6e8f68811e6)
-
-
-4. Select `This Firefox` on the left
-5. Click `Load Temporary Addon...` and browse to the unzipped folder, open `manifest.json`
+1. Download `4chan-multi-image-downloader-firefox.zip` from [Releases](https://github.com/otacoo/4chan-Batch-Downloader/releases/latest) or the `dist` folder
+2. Go into Firefox's Addons page, click the gear icon and select Debug Addons or browse to `about:debugging`
+3. Select `This Firefox` on the left
+4. Click `Load Temporary Addon...` and browse to the zip file
 
 
 ## Usage
 
-1. **Go to a 4chan thread** (or compatible imageboard).
+1. **Go to a 4chan thread**
 2. **ALT+CLICK** (or your configured modifier) on image thumbnails to select/unselect them.
 3. When images are selected, floating download buttons will appear:
    - **Download Selected Images**: Download each file (with dialog).
