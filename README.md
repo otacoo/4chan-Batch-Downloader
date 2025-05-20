@@ -46,11 +46,11 @@ Alternatively,
 1. **Go to a 4chan thread**
 2. **ALT+CLICK** (or your configured modifier) on image thumbnails to select/unselect them.
 3. When images are selected, floating download buttons will appear:
-   - **Download Selected Images**: Download each file (with dialog).
-   - **Download All (No Dialog)**: Download each file directly (no dialog, see note below).
-   - **Download as ZIP**: Download all as a single ZIP archive.
-4. **Cancel**: While downloading, the button turns red and can be clicked to cancel.
-5. **Options**: Click the extension icon and choose "Options" to configure all settings.
+   - **Download Selected Images**: Download each file (with dialog).
+   - **Download All (No Dialog)**: Download each file directly (no dialog, see note below).
+   - **Download as ZIP**: Download all as a single ZIP archive.
+5. **Cancel**: While downloading, the button turns red and can be clicked to cancel.
+6. **Options**: Click the extension icon and choose "Options" to configure all settings.
 
 
 ## Troubleshooting
