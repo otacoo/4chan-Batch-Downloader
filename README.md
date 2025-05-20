@@ -1,6 +1,6 @@
 # 4chan-Multi-Image-Downloader ![icon48](https://github.com/user-attachments/assets/b53cb537-c3d6-48a9-bdef-d71433f34228)
 
-Browser addon to batch download images and videos from 4chan with ease.  
+Browser addon to batch download images and videos from 4chan with ease.  
 Select images by ALT+CLICK (or your chosen modifier), then download them all at once with a single click.
 
 Need a userscript instead?
@@ -27,7 +27,7 @@ Check out: [@3nly's](https://gist.github.com/3nly/907b94181d75a39c5effb622266360
 
 ### Chrome
 
-1. Download `4chan-multi-image-downloader-chrome.zip` from [Releases](https://github.com/otacoo/4chan-Batch-Downloader/releases/latest) or the `dist` folder
+1. Download `4chan-batch-downloader-chrome.zip` from [Releases](https://github.com/otacoo/4chan-Batch-Downloader/releases/latest) or the `dist` folder
 2. Drag & drop the zip into the Extensions page to install
 
 Alternatively,
@@ -38,7 +38,7 @@ Alternatively,
 
 `¯\_(ツ)_/¯` Wait for the addon to be approved...
 
-1. Download `4chan-multi-image-downloader-firefox.zip` from [Releases](https://github.com/otacoo/4chan-Batch-Downloader/releases/latest) or the `dist` folder
+1. Download `4chan-batch-downloader-firefox.zip` from [Releases](https://github.com/otacoo/4chan-Batch-Downloader/releases/latest) or the `dist` folder
 2. Go into Firefox's Addons page, click the gear icon and select Debug Addons or browse to `about:debugging`
 3. Select `This Firefox` on the left
 4. Click `Load Temporary Addon...` and browse to the zip file
@@ -76,3 +76,4 @@ Make sure the option is enabled in the Options page.
 ## Contributing
 
 Pull requests and suggestions are welcome!
+

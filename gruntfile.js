@@ -34,12 +34,12 @@ module.exports = function (grunt) {
       chrome: {
         cwd: 'dist/chrome/',
         src: ['dist/chrome/**'],
-        dest: 'dist/4chan-multi-image-downloader-chrome.zip'
+        dest: 'dist/4chan-batch-downloader-chrome.zip'
       },
       firefox: {
         cwd: 'dist/firefox/',
         src: ['dist/firefox/**'],
-        dest: 'dist/4chan-multi-image-downloader-firefox.zip', // <-- changed from .xpi to .zip
+        dest: 'dist/4chan-batch-downloader-firefox.zip', // <-- changed from .xpi to .zip
         compression: 'DEFLATE'
       }
     }
