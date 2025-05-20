@@ -1,0 +1,17 @@
+{
+  "name": "4chan-multi-image-downloader",
+  "version": "1.0.0",
+  "description": "Batch download images from 4chan and similar boards.",
+  "main": "background.js",
+  "scripts": {
+    "build": "grunt build",
+    "build:chrome": "grunt build:chrome",
+    "build:firefox": "grunt build:firefox"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "grunt": "^1.6.1",
+    "grunt-contrib-clean": "^2.0.1",
+    "grunt-contrib-copy": "^1.0.0"
+  }
+}

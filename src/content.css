@@ -1,0 +1,24 @@
+/* Glowing border for selected thumbnails */
+.ibd-selected-thumb {
+  box-shadow: 0 0 0 4px #2d8cf0, 0 0 16px 4px #2d8cf088;
+  border-radius: 6px;
+  transition: box-shadow 0.2s;
+}
+
+/* Floating download button */
+#ibd-download-btn:active,
+#ibd-zip-btn:active,
+#ibd-nodialog-btn:active {
+  background: #1761a0;
+}
+
+/* Add focus/hover for all buttons for better UX */
+#ibd-download-btn:focus,
+#ibd-zip-btn:focus,
+#ibd-nodialog-btn:focus,
+#ibd-download-btn:hover,
+#ibd-zip-btn:hover,
+#ibd-nodialog-btn:hover {
+  outline: none;
+  background: #1e6bb8;
+}
