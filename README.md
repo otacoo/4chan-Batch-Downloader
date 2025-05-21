@@ -1,6 +1,6 @@
-# 4chan-Batch-Downloader ![icon48](https://github.com/user-attachments/assets/b53cb537-c3d6-48a9-bdef-d71433f34228)
+# Four-Batch-Downloader ![icon48](https://github.com/user-attachments/assets/b53cb537-c3d6-48a9-bdef-d71433f34228)
 
-Browser addon to batch download images and videos from 4chan with ease.  
+A browser extension to batch download images and videos from 4chan with ease.
 Select images by ALT+CLICK (or your chosen modifier), then download them all at once with a single click.
 
 Need a userscript instead?
@@ -11,19 +11,30 @@ Check out: [@3nly's](https://gist.github.com/3nly/907b94181d75a39c5effb622266360
 
 - **Batch select images:**
   - Modifier (configurable: <kbd>Alt</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Meta</kbd>) + Click
+  - Modifier + Click to select all images in a thread
+  
 - **Download selected images:**
   - Instantly
   - Individually (with Save as... dialog)
   - As a ZIP archive
-  
+
 - **Download with original filenames**
-- **Per-board and default download folders**
+
+- **Various download sorting options:**
+  - Per Board
+  - Per Name
+  - Per Filename 
+
 - **Download throttling:**
   - Sets a threshold and timeout to avoid rate limits (recommended)
+
 - **Customizable button position:**
   - Top Right, Middle, Bottom Right
+
 - **Cancel downloads in progress**
+
 - **Options page**
+  
 - **Cross-browser:**
   - Chrome (Manifest V3) and Firefox supported
 
@@ -31,7 +42,7 @@ Check out: [@3nly's](https://gist.github.com/3nly/907b94181d75a39c5effb622266360
 
 ### Chrome
 
-1. Download `4chan-batch-downloader-chrome.zip` from [Releases](https://github.com/otacoo/4chan-Batch-Downloader/releases/latest)
+1. Download `four-batch-downloader-chrome.zip` from [Releases](https://github.com/otacoo/Four-Batch-Downloader/releases/latest)
 2. Drag & drop the zip into the Extensions page to install
 
 Alternatively,
@@ -40,15 +51,19 @@ Alternatively,
 
 ### Firefox
 
-1. Download the signed `4chan-batch-downloader-firefox.xpi` from [Releases](https://github.com/otacoo/4chan-Batch-Downloader/releases/latest)
+1. Download the signed `four-batch-downloader-firefox.xpi` from [Releases](https://github.com/otacoo/Four-Batch-Downloader/releases/latest)
 2. Go into Firefox's Addons page
 3. Drag & drop the `.xpi` file to install
 
 ## Usage
 
-1. Browse to any 4chan thread
-2. Press <kbd>Alt</kbd> (or your configured modifier key) + `Click` to select images
-3. Press any of the buttons to download
+- <kbd>Alt</kbd> (or your configured modifier key) + `Click` to select individual images
+
+OR
+
+- <kbd>Alt</kbd> (or your configured modifier key) + `Double Click` to select ALL images
+
+- Press one of the download buttons
 
 ## Troubleshooting
 
