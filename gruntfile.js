@@ -107,6 +107,8 @@ module.exports = function (grunt) {
 
     updateManifest(manifestChromePath, newVersion);
     updateManifest(manifestFirefoxPath, newVersion);
+
+    // Update CHANGELOG.md
     updateChangelog(newVersion);
   });
 
@@ -120,7 +122,7 @@ module.exports = function (grunt) {
   grunt.registerTask('pack', ['build', 'zip:chrome', 'zip:firefox', 'zip:firefox_xpi']); // Builds and zips both, including .xpi
 
   // Version bump aliases
-  grunt.registerTask('release:patch', ['bump-version:patch']);
-  grunt.registerTask('release:minor', ['bump-version:minor']);
-  grunt.registerTask('release:major', ['bump-version:major']);
+  grunt.registerTask('patch', ['bump-version:patch']);
+  grunt.registerTask('minor', ['bump-version:minor']);
+  grunt.registerTask('major', ['bump-version:major']);
 };
