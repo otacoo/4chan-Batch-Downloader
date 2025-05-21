@@ -134,11 +134,13 @@ async function downloadImagesWithProgress(
         filename
       });
     }
+    // If using original filenames, always uniquify to avoid overwriting
+    const conflictAction = useOriginalFilenames ? "uniquify" : (overwriteExistingFiles ? "overwrite" : "uniquify");
     await new Promise(resolve => {
       chrome.downloads.download({
         url,
         filename: folder ? `${folder}/${filename}` : filename,
-        conflictAction: overwriteExistingFiles ? "overwrite" : "uniquify",
+        conflictAction: conflictAction,
         saveAs: !noDialog
       }, () => resolve());
     });
