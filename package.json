@@ -1,12 +1,19 @@
 {
   "name": "4chan-batch-downloader",
   "version": "1.0.0",
-  "description": "Batch download images from 4chan and similar boards.",
+  "description": "Batch download images from 4chan.",
   "main": "background.js",
   "scripts": {
     "build": "grunt build",
     "build:chrome": "grunt build:chrome",
-    "build:firefox": "grunt build:firefox"
+    "build:firefox": "grunt build:firefox",
+    "pack": "grunt pack",
+    "pack:chrome": "grunt pack:chrome",
+    "pack:firefox": "grunt pack:firefox",
+    "pack:firefox:xpi": "grunt pack:firefox:xpi",
+    "release:patch": "grunt release:patch",
+    "release:minor": "grunt release:minor",
+    "release:major": "grunt release:major"
   },
   "devDependencies": {
     "esbuild": "^0.20.0",
