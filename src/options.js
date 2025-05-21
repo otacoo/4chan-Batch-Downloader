@@ -26,7 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const buttonColorInput = document.getElementById('buttonColor');
   const glowColorInput = document.getElementById('glowColor');
   const buttonPositionSelect = document.getElementById('buttonPosition');
+  // Warning elements
   const showNoDialogNote = document.getElementById('noDialogNote');
+  const overwriteOriginalWarning = document.getElementById('overwriteOriginalWarning');
 
   // --- Default values ---
   const DEFAULTS = {
@@ -84,6 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     boardFolders = getOption(items, 'boardFolders');
     renderBoardFolders();
     toggleNoDialogNote();
+    updateOverwriteOriginalWarning(); // Initialize warning note on load
   });
 
   // --- Board folders table rendering ---
@@ -179,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
       status.textContent = 'Options reset to defaults!';
       setTimeout(() => status.textContent = '', 1500);
       toggleNoDialogNote();
+      updateOverwriteOriginalWarning();
     });
   });
 
@@ -188,4 +192,16 @@ document.addEventListener('DOMContentLoaded', () => {
     showNoDialogNote.style.display = showNoDialogBtn.checked ? 'block' : 'none';
   }
   showNoDialogBtn.addEventListener('change', toggleNoDialogNote);
+
+  // --- Show/hide warning note for overwrite + original filename ---
+  function updateOverwriteOriginalWarning() {
+    if (!overwriteOriginalWarning) return;
+    if (useOriginalFilenames.checked && overwriteExistingFiles.checked) {
+      overwriteOriginalWarning.style.display = 'block';
+    } else {
+      overwriteOriginalWarning.style.display = 'none';
+    }
+  }
+  useOriginalFilenames.addEventListener('change', updateOverwriteOriginalWarning);
+  overwriteExistingFiles.addEventListener('change', updateOverwriteOriginalWarning);
 });

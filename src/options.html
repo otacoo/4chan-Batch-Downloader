@@ -4,6 +4,8 @@
 <head>
     <meta charset="utf-8">
     <title>4chan Batch Downloader Options</title>
+    <!-- Add favicon -->
+    <link rel="icon" type="image/png" href="/icons/icon16.png">
     <style>
         body {
             font-family: sans-serif;
@@ -12,7 +14,7 @@
         }
 
         h1 {
-            margin-bottom: 1.2em;
+            margin: -0.4em 0 0.4em 0;
             text-align: center;
         }
 
@@ -30,7 +32,7 @@
             background: #fff;
             border: 1px solid #e5e5e5;
             border-radius: 10px;
-            padding: 28px 32px 24px 32px;
+            padding: 8px 32px 18px 32px;
             box-sizing: border-box;
             min-width: 350px;
             max-width: 450px;
@@ -169,7 +171,8 @@
                     </label>
                     <div id="noDialogNote"
                         style="display:none; max-width: 90%; background: #fffbe6; border: 1px solid #ffe58f; color: #ad8b00; border-radius: 6px; padding: 10px 16px; margin: 16px 0; font-size: 15px;">
-                        <b>Note:</b> For the "Download with no dialog" feature to work without dialogs, you must disable
+                        <b>Note:</b> For the "Download with no dialog" feature to work without dialogs, you may have to
+                        disable
                         <i>“Ask where to save each file before downloading”</i> in your browser's download settings.
                         <br>
                         <span style="font-size: 13px; color: #888;">
@@ -215,6 +218,11 @@
                         <input type="checkbox" id="overwriteExistingFiles">
                         Overwrite existing files with the same filename
                     </label>
+                    <div id="overwriteOriginalWarning"
+                        style="display:none; background: #fffbe6; border: 1px solid #ffe58f; color: #ad8b00; border-radius: 6px; padding: 10px 16px; margin: 8px 0 0 0; font-size: 15px;">
+                        <b>Note:</b> If "Download files with their original filenames" is enabled, files will always be
+                        renamed to avoid overwriting, even if "Overwrite existing files" is checked.
+                    </div>
                     <label><input type="checkbox" id="zipNameAddDate"> Add date to zip name</label>
                     <label><input type="checkbox" id="zipNameAddBoard"> Add board name to zip name</label>
                     <label><input type="checkbox" id="zipNameAddCount"> Add number of files to zip name</label>
