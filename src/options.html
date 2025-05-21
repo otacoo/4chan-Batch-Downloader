@@ -164,10 +164,6 @@
                         </select> + Click
                     </label>
                     <label>
-                        <input type="checkbox" id="useOriginalFilenames">
-                        Download files with their original filenames (if available)
-                    </label>
-                    <label>
                         <input type="checkbox" id="showNoDialogBtn">
                         Show button to download all images immediately (no dialog)
                     </label>
@@ -210,7 +206,11 @@
                     </label>
                 </div>
                 <div class="option-group">
-                    <h3>Zip Filename Options</h3>
+                    <h3>Filename Options</h3>
+                    <label>
+                        <input type="checkbox" id="useOriginalFilenames">
+                        Download files with their original filenames (if available)
+                    </label>
                     <label><input type="checkbox" id="zipNameAddDate"> Add date to zip name</label>
                     <label><input type="checkbox" id="zipNameAddBoard"> Add board name to zip name</label>
                     <label><input type="checkbox" id="zipNameAddCount"> Add number of files to zip name</label>
