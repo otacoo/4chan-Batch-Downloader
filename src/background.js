@@ -70,33 +70,54 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const timeoutSeconds = typeof message.timeoutSeconds === 'number' ? message.timeoutSeconds : 2;
     const useOriginalFilenames = !!message.useOriginalFilenames;
 
-    if (message.zip) {
-      chrome.storage.sync.get(['zipNameAddDate', 'zipNameAddBoard', 'zipNameAddCount'], (opts) => {
-        zipAndDownloadImages(message.files, folder, opts, tabId, imageThreshold, timeoutSeconds, useOriginalFilenames)
-          .then((result) => {
-            isDownloading = false;
-            sendResponse && sendResponse({ status: result === 'cancelled' ? "zip_cancelled" : "zip_started" });
-          })
-          .catch(err => {
-            isDownloading = false;
-            sendResponse && sendResponse({ status: "zip_failed", error: err?.toString() });
-          });
-      });
-      return true;
-    } else {
-      downloadImagesWithProgress(message.files, folder, tabId, noDialog, imageThreshold, timeoutSeconds, useOriginalFilenames)
-        .then((result) => {
+    // Fetch overwriteExistingFiles option from storage
+    chrome.storage.sync.get(['overwriteExistingFiles'], (opts) => {
+      const overwriteExistingFiles = !!opts.overwriteExistingFiles;
+      if (message.zip) {
+        chrome.storage.sync.get(['zipNameAddDate', 'zipNameAddBoard', 'zipNameAddCount'], (zipOpts) => {
+          zipAndDownloadImages(message.files, folder, zipOpts, tabId, imageThreshold, timeoutSeconds, useOriginalFilenames)
+            .then((result) => {
+              isDownloading = false;
+              sendResponse && sendResponse({ status: result === 'cancelled' ? "zip_cancelled" : "zip_started" });
+            })
+            .catch(err => {
+              isDownloading = false;
+              sendResponse && sendResponse({ status: "zip_failed", error: err?.toString() });
+            });
+        });
+        return;
+      } else {
+        downloadImagesWithProgress(
+          message.files,
+          folder,
+          tabId,
+          noDialog,
+          imageThreshold,
+          timeoutSeconds,
+          useOriginalFilenames,
+          overwriteExistingFiles // Pass the option here
+        ).then((result) => {
           isDownloading = false;
           sendResponse && sendResponse({ status: result === 'cancelled' ? "cancelled" : "started" });
         });
-      return true;
-    }
+      }
+    });
+    return true;
   }
   return true;
 });
 
 // Downloads images individually, with progress and cancellation support
-async function downloadImagesWithProgress(files, folder, tabId, noDialog, imageThreshold = 20, timeoutSeconds = 2, useOriginalFilenames = false) {
+async function downloadImagesWithProgress(
+  files,
+  folder,
+  tabId,
+  noDialog,
+  imageThreshold = 20,
+  timeoutSeconds = 2,
+  useOriginalFilenames = false,
+  overwriteExistingFiles = false // Accept as argument
+) {
   for (let i = 0; i < files.length; i++) {
     if (cancelRequested) {
       if (tabId) chrome.tabs.sendMessage(tabId, { type: 'fetch-cancelled' });
@@ -117,6 +138,7 @@ async function downloadImagesWithProgress(files, folder, tabId, noDialog, imageT
       chrome.downloads.download({
         url,
         filename: folder ? `${folder}/${filename}` : filename,
+        conflictAction: overwriteExistingFiles ? "overwrite" : "uniquify",
         saveAs: !noDialog
       }, () => resolve());
     });

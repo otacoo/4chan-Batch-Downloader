@@ -211,6 +211,10 @@
                         <input type="checkbox" id="useOriginalFilenames">
                         Download files with their original filenames (if available)
                     </label>
+                    <label>
+                        <input type="checkbox" id="overwriteExistingFiles">
+                        Overwrite existing files with the same filename
+                    </label>
                     <label><input type="checkbox" id="zipNameAddDate"> Add date to zip name</label>
                     <label><input type="checkbox" id="zipNameAddBoard"> Add board name to zip name</label>
                     <label><input type="checkbox" id="zipNameAddCount"> Add number of files to zip name</label>
@@ -280,11 +284,11 @@
                     </label>
                     <!-- Add more styling options here in the future -->
                     <label>
-                        Button color:
+                        Download button color:
                         <input type="color" id="buttonColor" value="#2d8cf0">
                     </label>
                     <label>
-                        Glow color:
+                        Highlight glow color:
                         <input type="color" id="glowColor" value="#2d8cf0">
                     </label>
                 </div>

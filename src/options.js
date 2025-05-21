@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const newBoardInput = document.getElementById('newBoard');
   const newFolderInput = document.getElementById('newFolder');
   const addBoardFolderBtn = document.getElementById('addBoardFolder');
+  const overwriteExistingFiles = document.getElementById('overwriteExistingFiles');
   const zipNameAddDate = document.getElementById('zipNameAddDate');
   const zipNameAddBoard = document.getElementById('zipNameAddBoard');
   const zipNameAddCount = document.getElementById('zipNameAddCount');
@@ -35,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     showIndividualBtn: true,
     showZipBtn: true,
     buttonPosition: 'top-right',
+    overwriteExistingFiles: false,
     zipNameAddDate: false,
     zipNameAddBoard: false,
     zipNameAddCount: false,
@@ -72,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     showIndividualBtn.checked = getOption(items, 'showIndividualBtn');
     showZipBtn.checked = getOption(items, 'showZipBtn');
     buttonPositionSelect.value = getOption(items, 'buttonPosition');
+    overwriteExistingFiles.checked = getOption(items, 'overwriteExistingFiles');
     zipNameAddDate.checked = getOption(items, 'zipNameAddDate');
     zipNameAddBoard.checked = getOption(items, 'zipNameAddBoard');
     zipNameAddCount.checked = getOption(items, 'zipNameAddCount');
@@ -135,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
       useOriginalFilenames: useOriginalFilenames.checked,
       showNoDialogBtn: showNoDialogBtn.checked,
       showIndividualBtn: showIndividualBtn.checked,
+      overwriteExistingFiles: overwriteExistingFiles.checked,
       showZipBtn: showZipBtn.checked,
       buttonPosition: buttonPositionSelect.value,
       zipNameAddDate: zipNameAddDate.checked,
@@ -163,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
       showIndividualBtn.checked = DEFAULTS.showIndividualBtn;
       showZipBtn.checked = DEFAULTS.showZipBtn;
       buttonPositionSelect.value = DEFAULTS.buttonPosition;
+      overwriteExistingFiles.checked = DEFAULTS.overwriteExistingFiles;
       zipNameAddDate.checked = DEFAULTS.zipNameAddDate;
       zipNameAddBoard.checked = DEFAULTS.zipNameAddBoard;
       zipNameAddCount.checked = DEFAULTS.zipNameAddCount;

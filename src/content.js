@@ -95,7 +95,7 @@
                 noDialogBtn = btn;
             } else if (btnInfo.type === 'individual') {
                 btn = document.createElement('button');
-                text = 'Download Selected';
+                text = 'Download (Save As...)';
                 id = 'ibd-download-btn';
                 clickHandler = onDownloadBtnClick;
                 downloadBtn = btn;
@@ -260,7 +260,8 @@
         isFetching = false;
         if (downloadBtn) {
             downloadBtn.classList.remove('ibd-cancel-btn');
-            downloadBtn.textContent = 'Download Selected';
+            downloadBtn.style.background = '';
+            downloadBtn.textContent = 'Download (Save As...)';
             downloadBtn.disabled = false;
             downloadBtn.removeEventListener('click', cancelFetch);
             downloadBtn.removeEventListener('click', onDownloadBtnClick);
@@ -268,6 +269,7 @@
         }
         if (zipBtn) {
             zipBtn.classList.remove('ibd-cancel-btn');
+            zipBtn.style.background = '';
             zipBtn.textContent = 'Download as ZIP';
             zipBtn.disabled = false;
             zipBtn.removeEventListener('click', cancelFetch);
@@ -276,6 +278,7 @@
         }
         if (noDialogBtn) {
             noDialogBtn.classList.remove('ibd-cancel-btn');
+            noDialogBtn.style.background = '';
             noDialogBtn.textContent = selected.size > 0 ? `Download (${selected.size})` : 'Download';
             noDialogBtn.disabled = false;
             noDialogBtn.removeEventListener('click', cancelFetch);
