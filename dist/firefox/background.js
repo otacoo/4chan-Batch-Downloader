@@ -3524,7 +3524,8 @@
     imageThreshold: 20,
     timeoutSeconds: 2,
     defaultFolder: "",
-    boardFolders: {}
+    boardFolders: {},
+    nameFolders: {}
   };
   chrome.runtime.onInstalled.addListener((details) => {
     if (details.reason === "install") {
@@ -3543,8 +3544,41 @@
     const match = files[0].url.match(/:\/\/i\.4cdn\.org\/([a-z0-9]+)\//i);
     return match ? match[1] : "";
   }
+  function getBoardNameFromUrl(url) {
+    const match = url.match(/:\/\/i\.4cdn\.org\/([a-z0-9]+)\//i);
+    return match ? match[1] : "";
+  }
+  function getFolderPathForFile(file, options) {
+    let folders = [];
+    if (options.defaultFolder && options.defaultFolder.trim()) {
+      folders.push(options.defaultFolder.trim());
+    }
+    const board = getBoardNameFromUrl(file.url);
+    if (board && options.boardFolders && options.boardFolders[board]) {
+      folders.push(options.boardFolders[board]);
+    }
+    if (options.nameFolders && typeof options.nameFolders === "object") {
+      for (const key in options.nameFolders) {
+        const entry = options.nameFolders[key];
+        if (!entry || !entry.string || !entry.label || !entry.folder)
+          continue;
+        let match = false;
+        if (entry.label === "filename" && typeof file.originalFilename === "string" && // exact match (change === entry.string to '.includes(entry.string)' for case-insensitive)
+        file.originalFilename === entry.string) {
+          match = true;
+        }
+        if (entry.label === "name" && typeof file.name === "string" && file.name === entry.string) {
+          match = true;
+        }
+        if (match) {
+          folders.push(entry.folder);
+          break;
+        }
+      }
+    }
+    return folders.join("/");
+  }
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log("Received message:", message);
     if (message.action === "cancelDownload") {
       cancelRequested = true;
       isDownloading = false;
@@ -3558,34 +3592,61 @@
       }
       isDownloading = true;
       cancelRequested = false;
-      const folder = message.folder || "";
       const tabId = sender.tab && sender.tab.id;
       const noDialog = !!message.noDialog;
       const imageThreshold = typeof message.imageThreshold === "number" ? message.imageThreshold : 20;
       const timeoutSeconds = typeof message.timeoutSeconds === "number" ? message.timeoutSeconds : 2;
       const useOriginalFilenames = !!message.useOriginalFilenames;
-      if (message.zip) {
-        chrome.storage.sync.get(["zipNameAddDate", "zipNameAddBoard", "zipNameAddCount"], (opts) => {
-          zipAndDownloadImages(message.files, folder, opts, tabId, imageThreshold, timeoutSeconds, useOriginalFilenames).then((result) => {
-            isDownloading = false;
-            sendResponse && sendResponse({ status: result === "cancelled" ? "zip_cancelled" : "zip_started" });
-          }).catch((err) => {
-            isDownloading = false;
-            sendResponse && sendResponse({ status: "zip_failed", error: err == null ? void 0 : err.toString() });
+      chrome.storage.sync.get([
+        "overwriteExistingFiles",
+        "defaultFolder",
+        "boardFolders",
+        "nameFolders"
+      ], (opts) => {
+        const overwriteExistingFiles = !!opts.overwriteExistingFiles;
+        const defaultFolder = opts.defaultFolder || "";
+        const boardFolders = opts.boardFolders || {};
+        const nameFolders = opts.nameFolders || {};
+        if (message.zip) {
+          chrome.storage.sync.get(["zipNameAddDate", "zipNameAddBoard", "zipNameAddCount"], (zipOpts) => {
+            zipAndDownloadImages(
+              message.files,
+              { defaultFolder, boardFolders, nameFolders },
+              zipOpts,
+              tabId,
+              imageThreshold,
+              timeoutSeconds,
+              useOriginalFilenames
+            ).then((result) => {
+              isDownloading = false;
+              sendResponse && sendResponse({ status: result === "cancelled" ? "zip_cancelled" : "zip_started" });
+            }).catch((err) => {
+              isDownloading = false;
+              sendResponse && sendResponse({ status: "zip_failed", error: err == null ? void 0 : err.toString() });
+            });
           });
-        });
-        return true;
-      } else {
-        downloadImagesWithProgress(message.files, folder, tabId, noDialog, imageThreshold, timeoutSeconds, useOriginalFilenames).then((result) => {
-          isDownloading = false;
-          sendResponse && sendResponse({ status: result === "cancelled" ? "cancelled" : "started" });
-        });
-        return true;
-      }
+          return;
+        } else {
+          downloadImagesWithProgress(
+            message.files,
+            { defaultFolder, boardFolders, nameFolders },
+            tabId,
+            noDialog,
+            imageThreshold,
+            timeoutSeconds,
+            useOriginalFilenames,
+            overwriteExistingFiles
+          ).then((result) => {
+            isDownloading = false;
+            sendResponse && sendResponse({ status: result === "cancelled" ? "cancelled" : "started" });
+          });
+        }
+      });
+      return true;
     }
     return true;
   });
-  async function downloadImagesWithProgress(files, folder, tabId, noDialog, imageThreshold = 20, timeoutSeconds = 2, useOriginalFilenames = false) {
+  async function downloadImagesWithProgress(files, folderOptions, tabId, noDialog, imageThreshold = 20, timeoutSeconds = 2, useOriginalFilenames = false, overwriteExistingFiles = false) {
     for (let i2 = 0; i2 < files.length; i2++) {
       if (cancelRequested) {
         if (tabId)
@@ -3596,6 +3657,7 @@
       let filename = url.split("/").pop().split("?")[0] || `image${i2 + 1}`;
       if (useOriginalFilenames && originalFilename)
         filename = originalFilename;
+      const folder = getFolderPathForFile(files[i2], folderOptions);
       if (tabId) {
         chrome.tabs.sendMessage(tabId, {
           type: "fetch-progress",
@@ -3604,10 +3666,12 @@
           filename
         });
       }
+      const conflictAction = useOriginalFilenames ? "uniquify" : overwriteExistingFiles ? "overwrite" : "uniquify";
       await new Promise((resolve) => {
         chrome.downloads.download({
           url,
           filename: folder ? `${folder}/${filename}` : filename,
+          conflictAction,
           saveAs: !noDialog
         }, () => resolve());
       });
@@ -3625,7 +3689,7 @@
     }
     return "done";
   }
-  async function zipAndDownloadImages(files, folder, opts, tabId, imageThreshold = 20, timeoutSeconds = 2, useOriginalFilenames = false) {
+  async function zipAndDownloadImages(files, folderOptions, opts, tabId, imageThreshold = 20, timeoutSeconds = 2, useOriginalFilenames = false) {
     const zip = new At();
     for (let i2 = 0; i2 < files.length; i2++) {
       if (cancelRequested) {
@@ -3637,10 +3701,11 @@
       let filename = url.split("/").pop().split("?")[0] || `image${i2 + 1}`;
       if (useOriginalFilenames && originalFilename)
         filename = originalFilename;
+      const folder = getFolderPathForFile(files[i2], folderOptions);
       try {
         const response = await fetch(url);
         const blob = await response.blob();
-        zip.file(filename, blob);
+        zip.file(folder ? `${folder}/${filename}` : filename, blob);
         if (tabId) {
           chrome.tabs.sendMessage(tabId, {
             type: "fetch-progress",
@@ -3692,7 +3757,7 @@
       const dataUrl = reader.result;
       chrome.downloads.download({
         url: dataUrl,
-        filename: folder ? `${folder}/${zipName}` : zipName,
+        filename: zipName,
         saveAs: true
       }, (downloadId) => {
         if (chrome.runtime.lastError) {

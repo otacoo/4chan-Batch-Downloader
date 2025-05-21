@@ -1,24 +1,44 @@
 /* Glowing border for selected thumbnails */
 .ibd-selected-thumb {
-  box-shadow: 0 0 0 4px #2d8cf0, 0 0 16px 4px #2d8cf088;
+  box-shadow: 0 0 0 4px var(--ibd-glow-color, #2d8cf0), 0 0 16px 4px var(--ibd-glow-color, #2d8cf088);
   border-radius: 6px;
   transition: box-shadow 0.2s;
 }
 
-/* Floating download button */
-#ibd-download-btn:active,
-#ibd-zip-btn:active,
-#ibd-nodialog-btn:active {
-  background: #1761a0;
+/* Floating download button base */
+#container-4bd #ibd-download-btn,
+#container-4bd #ibd-zip-btn,
+#container-4bd #ibd-nodialog-btn {
+  transition: background 0.18s, color 0.18s, filter 0.18s;
+  background: var(--ibd-button-color, #2d8cf0);
 }
 
-/* Add focus/hover for all buttons for better UX */
-#ibd-download-btn:focus,
-#ibd-zip-btn:focus,
-#ibd-nodialog-btn:focus,
-#ibd-download-btn:hover,
-#ibd-zip-btn:hover,
-#ibd-nodialog-btn:hover {
+/* Focus/hover for all buttons for better UX */
+#container-4bd #ibd-download-btn:focus,
+#container-4bd #ibd-zip-btn:focus,
+#container-4bd #ibd-nodialog-btn:focus,
+#container-4bd #ibd-download-btn:hover,
+#container-4bd #ibd-zip-btn:hover,
+#container-4bd #ibd-nodialog-btn:hover {
   outline: none;
-  background: #1e6bb8;
+  filter: brightness(0.85);
+}
+
+/* Active state */
+#container-4bd #ibd-download-btn:active,
+#container-4bd #ibd-zip-btn:active,
+#container-4bd #ibd-nodialog-btn:active {
+  filter: brightness(0.7);
+}
+
+/* Cancel button styling (hardcoded red shades) */
+#container-4bd .ibd-cancel-btn {
+    background: #e74c3c !important;
+}
+#container-4bd .ibd-cancel-btn:hover,
+#container-4bd .ibd-cancel-btn:focus {
+    background: #b71c1c !important;
+}
+#container-4bd .ibd-cancel-btn:active {
+    background: #7f1010 !important;
 }

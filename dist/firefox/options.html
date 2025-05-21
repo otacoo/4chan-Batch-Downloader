@@ -3,11 +3,122 @@
 
 <head>
     <meta charset="utf-8">
-    <title>4chan Batch Downloader Options</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Four Batch Downloader Options</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/icons/icon16.png">
     <style>
+        /* Firefox */
+        @-moz-document url-prefix() {
+            body {
+                font-size: smaller;
+            }
+        }
+
+        /* Globals */
+        :root {
+            --main-bg: #f8f9fb;
+            --panel-bg: #fff;
+            --panel-border: #e5e5e5;
+            --panel-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+            --text-main: #222;
+            --text-secondary: #444;
+            --input-bg: #fff;
+            --input-border: #ccc;
+            --remove-btn: #c00;
+            --remove-btn-hover: #a00;
+            --warning-bg: #fffbe6;
+            --warning-border: #ffe58f;
+            --warning-text: #ad8b00;
+            --howto-bg: #f5f5f5;
+            --howto-border: #dddddd;
+            --howto-text: #444;
+            --button-bg: #2d8cf0;
+            --button-bg-hover: #1761a0;
+            --button-text: #fff;
+            --button-reset-bg: #fff;
+            --button-reset-text: #e74c3c;
+            --button-reset-border: #e74c3c;
+            --info-bg: #e6f7ff;
+            --info-border: #91d5ff;
+            --info-text: #0050b3;
+            --link: #1677ff;
+            --link-hover: #0050b3;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --main-bg: #181a1b;
+                --panel-bg: #23272a;
+                --panel-border: #33383d;
+                --panel-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+                --text-main: #f3f3f3;
+                --text-secondary: #cfcfcf;
+                --input-bg: #23272a;
+                --input-border: #444a50;
+                --remove-btn: #ff6b6b;
+                --remove-btn-hover: #ff3b3b;
+                --warning-bg: #2d2a1b;
+                --warning-border: #bfae58;
+                --warning-text: #ffe58f;
+                --howto-bg: #23272a;
+                --howto-border: #444a50;
+                --howto-text: #cfcfcf;
+                --button-bg: #1677ff;
+                --button-bg-hover: #0050b3;
+                --button-text: #fff;
+                --button-reset-bg: #23272a;
+                --button-reset-text: #ff6b6b;
+                --button-reset-border: #ff6b6b;
+                --info-bg: #102a43;
+                --info-border: #2b6cb0;
+                --info-text: #63b3ed;
+                --link: #63b3ed;
+                --link-hover: #bee3f8;
+            }
+        }
+
+        html,
+        body {
+            background: var(--main-bg);
+            color: var(--text-main);
+        }
+
         body {
             font-family: sans-serif;
             margin: 2em;
+        }
+
+        #options-container {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        #main-options,
+        #side-options,
+        #styling-options {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 10px;
+            padding: 8px 32px 18px 32px;
+            box-sizing: border-box;
+            min-width: 350px;
+            max-width: 450px;
+            box-shadow: var(--panel-shadow);
+            color: var(--text-main);
+        }
+
+        #main-options,
+        #side-options,
+        #styling-options {
+            flex: 1 1 0;
+        }
+
+        .option-group {
+            margin-bottom: 1.5em;
         }
 
         label {
@@ -19,73 +130,93 @@
         select,
         input[type="number"] {
             width: 200px;
+            background: var(--input-bg);
+            color: var(--text-main);
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            padding: 4px 8px;
+        }
+
+        input#imageThreshold,
+        input#timeoutSeconds {
+            width: 80px;
+        }
+
+        #newNameLabel {
+            width: 100px;
         }
 
         button {
             margin-top: 1em;
         }
 
-        .option-group {
-            margin-bottom: 1em;
-        }
-
         table {
             border-collapse: collapse;
             margin-top: 1em;
+            width: 100%;
         }
 
         th,
         td {
-            border: 1px solid #ccc;
+            border: 1px solid var(--input-border);
             padding: 4px 8px;
         }
 
         th {
-            background: #f0f0f0;
+            background: var(--howto-bg);
+            color: var(--howto-text);
+        }
+
+        hr {
+            background-image: linear-gradient(to left, rgba(137, 115, 153, 0), var(--text-main), rgba(137, 115, 153, 0));
+            height: 2px;
+            border: none;
+            clear: both;
         }
 
         .remove-btn {
-            color: #c00;
+            color: var(--remove-btn);
             cursor: pointer;
+            transition: color 0.15s;
         }
 
-        /* Flex container for folder options */
-        .folder-options-row {
+        .remove-btn:hover {
+            color: var(--remove-btn-hover);
+        }
+
+        .warning-note,
+        .how-to-use-note {
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin: 8px 0 0 0;
+            font-size: 12px;
+        }
+
+        .warning-note {
+            display: none;
+            background: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            color: var(--warning-text);
+        }
+
+        .how-to-use-note {
+            background: var(--howto-bg);
+            border: 1px solid var(--howto-border);
+            color: var(--howto-text);
+        }
+
+        /* Center the action buttons */
+        #action-buttons {
             display: flex;
-            gap: 32px;
-            margin-bottom: 2em;
-        }
-
-        .folder-option-col {
-            flex: 1 1 0;
-            min-width: 320px;
-            max-width: 480px;
-            background: #fafbfc;
-            border: 1px solid #e5e5e5;
-            border-radius: 8px;
-            padding: 18px 18px 12px 18px;
-            box-sizing: border-box;
-        }
-
-        .folder-option-col h3 {
-            margin-top: 0;
-        }
-
-        @media (max-width: 900px) {
-            .folder-options-row {
-                flex-direction: column;
-                gap: 0;
-            }
-
-            .folder-option-col {
-                max-width: 100%;
-                margin-bottom: 1em;
-            }
+            justify-content: center;
+            align-items: center;
+            margin-top: 2em;
+            gap: 16px;
         }
 
         #options-form button[type="submit"] {
-            background: #2d8cf0;
-            color: #fff;
+            background: var(--button-bg);
+            color: var(--button-text);
             border: none;
             border-radius: 6px;
             padding: 12px 32px;
@@ -94,146 +225,298 @@
             box-shadow: 0 2px 8px rgba(45, 140, 240, 0.08);
             cursor: pointer;
             transition: background 0.2s, box-shadow 0.2s;
-            margin-top: 2em;
-            margin-bottom: 1em;
             letter-spacing: 0.5px;
         }
 
         #options-form button[type="submit"]:hover,
         #options-form button[type="submit"]:focus {
-            background: #1761a0;
+            background: var(--button-bg-hover);
             box-shadow: 0 4px 16px rgba(45, 140, 240, 0.15);
             outline: none;
+        }
+
+        #resetOptions {
+            background: var(--button-reset-bg);
+            color: var(--button-reset-text);
+            border: 1px solid var(--button-reset-border);
+        }
+
+        #resetOptions:hover {
+            background: var(--button-reset-text) !important;
+            color: var(--button-reset-bg) !important;
+        }
+
+        /* Info container styles */
+        #info-section {
+            background: var(--info-bg);
+            border: 1px solid var(--info-border);
+            color: var(--info-text);
+            border-radius: 10px;
+            margin: 20px 0 0 0;
+            max-width: 100%;
+            padding: 24px 32px;
+            font-size: 1.1em;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            text-align: center;
+            line-height: 1.1em;
+        }
+
+        #info-section a {
+            color: var(--link);
+            text-decoration: underline;
+            transition: color 0.15s;
+        }
+
+        #info-section a:hover {
+            color: var(--link-hover);
+        }
+
+        /* Responsive for small screens */
+        @media (max-width: 1400px) {
+            #options-container {
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            #options-container {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            #main-options,
+            #side-options,
+            #styling-options,
+            #info-container {
+                max-width: 100%;
+                margin-bottom: 1.5em;
+            }
         }
     </style>
 </head>
 
 <body>
-    <h1>4chan Batch Downloader Options</h1>
     <form id="options-form">
-        <div class="option-group">
-            <h3>Options:</h3>
-            <label>
-                Shortcut key for selecting images:
-                <select id="modifierKey">
-                    <option value="alt">Alt</option>
-                    <option value="ctrl">Ctrl</option>
-                    <option value="shift">Shift</option>
-                    <option value="meta">Meta (Command/Windows)</option>
-                </select> + Click
-            </label>
-        </div>
-        <div class="option-group">
-            <label>
-                <input type="checkbox" id="useOriginalFilenames">
-                Download files with their original filenames (if available)
-            </label>
-            <label>
-                <input type="checkbox" id="showNoDialogBtn">
-                Show button to download all images immediately (no dialog)
-            </label>
-            <div id="noDialogNote"
-                style="display:none; max-width: 50%; background: #fffbe6; border: 1px solid #ffe58f; color: #ad8b00; border-radius: 6px; padding: 10px 16px; margin: 16px 0; font-size: 15px;">
-                <b>Note:</b> For the "Download with no dialog" feature to work without dialogs, you must disable
-                <i>“Ask where to save each file before downloading”</i> in your browser's download settings.
-                <br>
-                <span style="font-size: 13px; color: #888;">
-                    (In Chrome: Settings &gt; Downloads &gt; uncheck “Ask where to save each file before downloading”)
-                </span>
+        <div id="options-container">
+            <!-- Main options (left column) -->
+            <div id="main-options">
+                <h2>Main Options</h2>
+                <div class="option-group">
+                    <h3>Selection</h3>
+                    <label>
+                        Shortcut key for selecting images:
+                        <select id="modifierKey">
+                            <option value="alt">Alt</option>
+                            <option value="ctrl">Ctrl</option>
+                            <option value="shift">Shift</option>
+                            <option value="meta">Meta (Command/Windows)</option>
+                        </select> + Click
+                    </label>
+                    <label>
+                        <input type="checkbox" id="selectAllOnDoubleClick">
+                        Double-click an image to select all images (timeout rec.)
+                    </label>
+                    <h3>Download Buttons</h3>
+                    <label>
+                        <input type="checkbox" id="showNoDialogBtn">
+                        Show button to download all images immediately (no dialog)
+                    </label>
+                    <div id="noDialogNote" class="warning-note">
+                        <b>Note:</b> For this feature to work without dialogs, you may have to
+                        disable
+                        <i>“Ask where to save each file before downloading”</i> in your browser's download settings.
+                        <br>
+                        <span style="font-size: 13px; color: #888;">
+                            (In Chrome: Settings &gt; Downloads &gt; uncheck “Ask where to save each file before
+                            downloading”)
+                        </span>
+                    </div>
+                    <label>
+                        <input type="checkbox" id="showIndividualBtn">
+                        Show button to download files individually
+                    </label>
+                    <label>
+                        <input type="checkbox" id="showZipBtn">
+                        Show button to download as zip
+                    </label>
+                </div>
+                <div class="option-group">
+                    <h3>Download Throttling</h3>
+                    <label>
+                        Image threshold:
+                        <input type="number" id="imageThreshold" min="1" max="1000" value="20">
+                        <br>
+                        <span style="font-size: 0.9em; color: #555;">Number of images after which to start adding a
+                            timeout
+                            between downloads (default: 20).</span>
+                    </label>
+                    <label>
+                        Timeout (seconds):
+                        <input type="number" id="timeoutSeconds" min="0" max="600" value="2">
+                        <br>
+                        <span style="font-size: 0.9em; color: #555;">Timeout in seconds to wait between each image
+                            download
+                            after the threshold is reached (default: 2).</span>
+                    </label>
+                </div>
+                <div class="option-group">
+                    <h3>Filename Options</h3>
+                    <label>
+                        <input type="checkbox" id="useOriginalFilenames">
+                        Download files with their original filenames (if available)
+                    </label>
+                    <label>
+                        <input type="checkbox" id="overwriteExistingFiles">
+                        Overwrite existing files with the same filename
+                    </label>
+                    <div id="overwriteOriginalWarning" class="warning-note">
+                        <b>Note:</b> If "Download files with their original filenames" is enabled, files will always be
+                        renamed to avoid overwriting, even if "Overwrite existing files" is checked.
+                    </div>
+                    <label><input type="checkbox" id="zipNameAddDate"> Add date to zip name</label>
+                    <label><input type="checkbox" id="zipNameAddBoard"> Add board name to zip name</label>
+                    <label><input type="checkbox" id="zipNameAddCount"> Add number of files to zip name</label>
+                </div>
+                <div id="action-buttons">
+                    <button type="submit">Save Options</button>
+                    <span id="status"></span>
+                    <button type="button" id="resetOptions"
+                        style="background:#fff;color:#e74c3c;border:1px solid #e74c3c;">
+                        Reset to Defaults
+                    </button>
+                </div>
             </div>
-            <label>
-                <input type="checkbox" id="showIndividualBtn">
-                Show button to download files individually
-            </label>
-            <label>
-                <input type="checkbox" id="showZipBtn">
-                Show button to download as zip
-            </label>
-        </div>
-        <div class="option-group">
-            <h3>Styling:</h3>
-            <label>
-                Download button position:
-                <select id="buttonPosition">
-                    <option value="top-right">Top Right</option>
-                    <option value="middle">Middle</option>
-                    <option value="bottom-right">Bottom Right</option>
-                </select>
-            </label>
-        </div>
-        <div class="option-group">
-            <label>
-                <h3>Zip Filename Options:</h3>
-            </label>
-            <label><input type="checkbox" id="zipNameAddDate"> Add date to zip name</label>
-            <label><input type="checkbox" id="zipNameAddBoard"> Add board name to zip name</label>
-            <label><input type="checkbox" id="zipNameAddCount"> Add number of files to zip name</label>
-        </div>
-        <div class="option-group">
-            <label>
-                <h3>Download Throttling:</h3>
-            </label>
-            <label>
-                Image threshold:
-                <input type="number" id="imageThreshold" min="1" max="1000" value="10">
-                <span style="font-size: 0.9em; color: #555;">Number of images after which to start adding a timeout
-                    between downloads (default: 20).</span>
-            </label>
-            <label>
-                Timeout (seconds):
-                <input type="number" id="timeoutSeconds" min="0" max="600" value="2">
-                <span style="font-size: 0.9em; color: #555;">Timeout in seconds to wait between each image download
-                    after the threshold is reached (default: 2).</span>
-            </label>
-        </div>
-        <!-- Side-by-side folder options -->
-        <div class="folder-options-row">
-            <div class="folder-option-col">
-                <h3>Default Download Folder</h3>
-                <input type="text" id="defaultFolder" placeholder="e.g. 4chan-images">
-                <div style="font-size: 1em; color: #555; margin-top: 0.5em;">
-                    <b>How to use:</b>
+            <!-- Side options (middle column) -->
+            <div id="side-options">
+                <!-- Default Download Folder -->
+                <h2>Sorting</h2>
+                <div class="option-group">
+                    <h3>Default Download Folder</h3>
+                    <input type="text" id="defaultFolder" placeholder="e.g. 4chan-images">
+                    <div class="how-to-use-note">
+                        <b>How to use:</b>
+                        <br>
+                        Relative to the browser's default download folder. Leave empty for default browser's folder.<br>
+                        If you type, e.g. "4chan" as folder, and your browser's Downloads directory is
+                        <code>/home/user/Downloads</code>, then files will be saved to:
+                        <code>/home/user/Downloads/4chan/</code>
+                    </div>
+                </div>
+                <!-- Per-board Download Folders -->
+                <div class="option-group">
+                    <h3>Per-board Download Folders</h3>
+                    <div class="how-to-use-note">
+                        <b>How to use:</b>
+                        <br>
+                        If you set any Per-board Download folders below, e.g. "a | Anime" then any files from /a/ will
+                        be saved (as per the previous example) to:<br>
+                        <code>/home/user/Downloads/4chan/Anime</code>
+                    </div>
+                    <div>
+                        <br>
+                        <input type="text" id="newBoard" placeholder="Board (e.g. a)">
+                        <input type="text" id="newFolder" placeholder="Folder Name (e.g. Anime)">
+                        <button type="button" id="addBoardFolder">Add</button>
+                    </div>
+                    <table id="boardFoldersTable">
+                        <thead>
+                            <tr>
+                                <th>Board (e.g. a, b, g)</th>
+                                <th>Folder Name</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="boardFoldersBody">
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Per-Name Download Folder -->
+                <div class="option-group">
+                    <h3>Per-Name Download Folder</h3>
+                    <div class="how-to-use-note">
+                        <b>How to use:</b>
+                        <br>
+                        If you set any Per-Name Download folders below, files whose <b>original filename</b> or
+                        <b>poster name</b> contains the specified string will be saved to the specified folder.<br>
+                        <span style="font-size: 0.95em; color: #888;">
+                            (e.g. String: <code>cat</code>, Label: <b>Filename</b>, Folder: <code>Cats</code> will save
+                            any file whose filename contains "cat" to the "Cats" folder)
+                            <br>
+                        </span>
+                        <br>
+                        <strong>CASE-SENSITIVE</strong>
+                    </div>
+                    <div>
+                        <br>
+                        <input type="text" id="newNameString" placeholder="String to check for (e.g. cat)">
+                        <select id="newNameLabel">
+                            <option value="name">Name</option>
+                            <option value="filename">Filename</option>
+                        </select>
+                        <input type="text" id="newNameFolder" placeholder="Folder Name (e.g. Cats)">
+                        <button type="button" id="addNameFolder">Add</button>
+                    </div>
+                    <table id="nameFoldersTable">
+                        <thead>
+                            <tr>
+                                <th>String to check for</th>
+                                <th>Label</th>
+                                <th>Folder Name</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="nameFoldersBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Styling options (right column) -->
+            <div id="styling-options">
+                <h2>Styling</h2>
+                <div class="option-group">
+                    <label>
+                        Download button position:
+                        <select id="buttonPosition">
+                            <option value="top-right">Top Right</option>
+                            <option value="middle">Middle</option>
+                            <option value="bottom-right">Bottom Right</option>
+                        </select>
+                    </label>
+                    <label>
+                        Download button color:
+                        <input type="color" id="buttonColor" value="#2d8cf0">
+                    </label>
+                    <label>
+                        Highlight glow color:
+                        <input type="color" id="glowColor" value="#2d8cf0">
+                    </label>
+                </div>
+                <hr>
+                <div id="info-section">
+                    <img src="/icons/icon128.png" alt="4chan Batch Downloader Logo"
+                        style="width:64px;height:64px;margin-bottom:10px;"><br>
+                    <b>Four Batch Downloader</b> &mdash; v2.0.0 &mdash; 
                     <br>
-                    Relative to the browser's default download folder. Leave empty for default browser's folder.<br>
-                    If you type, e.g. "4chan" as folder, and your browser's Downloads directory is
-                    <code>/home/user/Downloads</code>, then files will be saved to:<br>
-                    <code>/home/user/Downloads/4chan/</code>
+                    A browser extension for flexible image
+                    downloads.<br><br>
+                    <span>
+                        <a href="https://github.com/otacoo/4chan-Batch-Downloader" target="_blank"
+                            rel="noopener noreferrer">
+                            GitHub Repository
+                        </a>
+                        &nbsp;|&nbsp;
+                        <a href="https://github.com/otacoo/4chan-Batch-Downloader/issues" target="_blank"
+                            rel="noopener noreferrer">
+                            Report an Issue
+                        </a>
+                    </span>
+                    <br><br>
+                    <span style="font-size:0.95em;">
+                        For help, feature requests, or bug reports, please use the links above.<br>
+                        Thank you for using <i>4BD</i> and your support!
+                    </span>
                 </div>
             </div>
-            <div class="folder-option-col">
-                <h3>Per-board Download Folders</h3>
-                <div style="font-size: 1em; color: #555; margin-bottom: 0.5em;">
-                    <b>How to use:</b>
-                    <br>
-                    If you set any Per-board Download folders below, e.g. "a | Anime" then any files from /a/ will be
-                    saved (as per the previous example) to:<br>
-                    <code>/home/user/Downloads/4chan/Anime</code>
-                </div>
-                <div>
-                    <input type="text" id="newBoard" placeholder="Board (e.g. a)">
-                    <input type="text" id="newFolder" placeholder="Folder Name (e.g. Anime)">
-                    <button type="button" id="addBoardFolder">Add</button>
-                </div>
-                <table id="boardFoldersTable">
-                    <thead>
-                        <tr>
-                            <th>Board (e.g. a, b, g)</th>
-                            <th>Folder Name</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="boardFoldersBody">
-                    </tbody>
-                </table>
-                <br>
-            </div>
-        </div>
-        <button type="submit">Save Options</button>
-        <span id="status"></span>
-        <button type="button" id="resetOptions"
-            style="background:#fff;color:#e74c3c;border:1px solid #e74c3c;margin-left:16px;">
-            Reset to Defaults
-        </button>
     </form>
     <script src="options.js"></script>
 </body>
