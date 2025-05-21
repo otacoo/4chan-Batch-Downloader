@@ -15,6 +15,7 @@
     let showZipBtn = false;
     let boardFolders = {}; // { board: folder }
     let defaultFolder = '';
+    let nameFolders = {}; // { key: { string, label, folder } }
     // Timeouts
     let imageThreshold = 20;
     let timeoutSeconds = 2;
@@ -159,7 +160,7 @@
             notificationDiv = document.createElement('div');
             notificationDiv.id = 'ibd-notification';
             notificationDiv.style.position = 'fixed';
-            notificationDiv.style.right = '32px';
+            notificationDiv.style.right = '45px';
             notificationDiv.style.zIndex = 99999;
             notificationDiv.style.background = '#fffbe6';
             notificationDiv.style.color = '#333';
@@ -326,18 +327,20 @@
         return defaultFolder || '';
     }
 
-    // Helper: Get Original Filename
+    // Helper: Get Original Filename and Name for Per-Name Download Folders
     function getSelectedFiles() {
-        // Returns array of { url, originalFilename }
+        // Returns array of { url, originalFilename, name }
         const files = [];
         selected.forEach(url => {
             // Find the .fileThumb with this href
             const thumb = document.querySelector(`.fileThumb[href="${url}"]`);
             let originalFilename = null;
+            let name = null;
             if (thumb) {
                 // Try .fileText-original first
                 const fileDiv = thumb.closest('.file');
                 if (fileDiv) {
+                    // Original filename
                     const origSpan = fileDiv.querySelector('.fileText-original a');
                     if (origSpan) {
                         originalFilename = origSpan.textContent.trim();
@@ -349,8 +352,17 @@
                         }
                     }
                 }
+                // Name (poster)
+                // Traverse up to .post, then find .name inside .nameBlock
+                let postDiv = thumb.closest('.post');
+                if (postDiv) {
+                    const nameSpan = postDiv.querySelector('.nameBlock .name');
+                    if (nameSpan) {
+                        name = nameSpan.textContent.trim();
+                    }
+                }
             }
-            files.push({ url, originalFilename });
+            files.push({ url, originalFilename, name });
         });
         return files;
     }
@@ -361,7 +373,7 @@
         const files = getSelectedFiles();
         const folder = getDownloadFolder();
         showNotification('Fetching images...');
-        chrome.storage.sync.get(['useOriginalFilenames'], (opts) => {
+        chrome.storage.sync.get(['useOriginalFilenames', 'nameFolders'], (opts) => {
             opts = opts || {};
             chrome.runtime.sendMessage({
                 action: "downloadImages",
@@ -371,7 +383,8 @@
                 noDialog: true,
                 imageThreshold,
                 timeoutSeconds,
-                useOriginalFilenames: !!opts.useOriginalFilenames
+                useOriginalFilenames: !!opts.useOriginalFilenames,
+                nameFolders: opts.nameFolders || {}
             }, () => {
                 getAllThumbs().forEach(thumb => thumb.classList.remove(SELECTED_CLASS));
                 selected.clear();
@@ -386,7 +399,7 @@
         const files = getSelectedFiles();
         const folder = getDownloadFolder();
         showNotification('Fetching images...');
-        chrome.storage.sync.get(['useOriginalFilenames'], (opts) => {
+        chrome.storage.sync.get(['useOriginalFilenames', 'nameFolders'], (opts) => {
             opts = opts || {};
             chrome.runtime.sendMessage({
                 action: "downloadImages",
@@ -395,7 +408,8 @@
                 folder,
                 imageThreshold,
                 timeoutSeconds,
-                useOriginalFilenames: !!opts.useOriginalFilenames
+                useOriginalFilenames: !!opts.useOriginalFilenames,
+                nameFolders: opts.nameFolders || {}
             }, () => {
                 getAllThumbs().forEach(thumb => thumb.classList.remove(SELECTED_CLASS));
                 selected.clear();
@@ -410,7 +424,7 @@
         const files = getSelectedFiles();
         const folder = getDownloadFolder();
         showNotification('Fetching images and creating ZIP...');
-        chrome.storage.sync.get(['useOriginalFilenames'], (opts) => {
+        chrome.storage.sync.get(['useOriginalFilenames', 'nameFolders'], (opts) => {
             opts = opts || {};
             chrome.runtime.sendMessage({
                 action: "downloadImages",
@@ -419,7 +433,8 @@
                 folder,
                 imageThreshold,
                 timeoutSeconds,
-                useOriginalFilenames: !!opts.useOriginalFilenames
+                useOriginalFilenames: !!opts.useOriginalFilenames,
+                nameFolders: opts.nameFolders || {}
             }, () => {
                 getAllThumbs().forEach(thumb => thumb.classList.remove(SELECTED_CLASS));
                 selected.clear();
@@ -502,7 +517,7 @@
 
         chrome.storage.sync.get([
             'modifierKey', 'showNoDialogBtn', 'showIndividualBtn', 'showZipBtn',
-            'boardFolders', 'defaultFolder', 'imageThreshold', 'timeoutSeconds', 'buttonPosition', 'useOriginalFilenames', 'buttonColor', 'glowColor'
+            'boardFolders', 'defaultFolder', 'imageThreshold', 'timeoutSeconds', 'buttonPosition', 'useOriginalFilenames', 'buttonColor', 'glowColor', 'nameFolders'
         ], (items) => {
             items = items || {};
             buttonColor = items.buttonColor || '#2d8cf0';
@@ -517,6 +532,7 @@
             boardFolders = items.boardFolders || {};
             defaultFolder = items.defaultFolder || '';
             useOriginalFilenames = !!items.useOriginalFilenames;
+            nameFolders = items.nameFolders || {};
             setIbdCssVariables(buttonColor, glowColor);
             createDownloadButtons();
             attachListeners();
@@ -528,11 +544,11 @@
             if (area === 'sync' && (
                 changes.showIndividualBtn || changes.showZipBtn || changes.showNoDialogBtn ||
                 changes.modifierKey || changes.boardFolders || changes.defaultFolder ||
-                changes.imageThreshold || changes.timeoutSeconds || changes.buttonPosition || changes.useOriginalFilenames || changes.buttonColor || changes.glowColor
+                changes.imageThreshold || changes.timeoutSeconds || changes.buttonPosition || changes.useOriginalFilenames || changes.buttonColor || changes.glowColor || changes.nameFolders
             )) {
                 chrome.storage.sync.get([
                     'modifierKey', 'showNoDialogBtn', 'showIndividualBtn', 'showZipBtn',
-                    'boardFolders', 'defaultFolder', 'imageThreshold', 'timeoutSeconds', 'buttonPosition', 'useOriginalFilenames', 'buttonColor', 'glowColor'
+                    'boardFolders', 'defaultFolder', 'imageThreshold', 'timeoutSeconds', 'buttonPosition', 'useOriginalFilenames', 'buttonColor', 'glowColor', 'nameFolders'
                 ], (items) => {
                     items = items || {};
                     buttonColor = items.buttonColor || '#2d8cf0';
@@ -547,6 +563,7 @@
                     boardFolders = items.boardFolders || {};
                     defaultFolder = items.defaultFolder || '';
                     useOriginalFilenames = !!items.useOriginalFilenames;
+                    nameFolders = items.nameFolders || {};
                     setIbdCssVariables(buttonColor, glowColor);
                     createDownloadButtons();
                 });
@@ -554,7 +571,7 @@
         });
     }
 
-    // Only run on 4chan boards (defensive)
+    // Only run on 4chan boards
     if (/^https?:\/\/boards\.4chan\.org\//.test(window.location.href)) {
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);

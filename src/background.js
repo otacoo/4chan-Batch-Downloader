@@ -1,8 +1,8 @@
-import JSZip from './vendor/jszip-esm.js';
-
 /**
  * 4chins Batch Downloader Addon - Background Script
  */
+
+import JSZip from './vendor/jszip-esm.js';
 
 // Extension default settings
 const DEFAULTS = {
@@ -37,15 +37,12 @@ function getCurrentDateString() {
   const now = new Date();
   return `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
 }
-
-// Helper: get board name from image URLs
+// Helper: get board name from a single file url
 function getBoardNameFromFiles(files) {
   if (!files.length) return '';
-  // Try to extract board name from the first url (e.g. https://i.4cdn.org/a/...)
   const match = files[0].url.match(/:\/\/i\.4cdn\.org\/([a-z0-9]+)\//i);
   return match ? match[1] : '';
 }
-
 // Helper: get board name from a single file url
 function getBoardNameFromUrl(url) {
   const match = url.match(/:\/\/i\.4cdn\.org\/([a-z0-9]+)\//i);
@@ -56,28 +53,33 @@ function getBoardNameFromUrl(url) {
 function getFolderPathForFile(file, options) {
   // options: { defaultFolder, boardFolders, nameFolders }
   let folders = [];
-
   // 1. Default folder
   if (options.defaultFolder && options.defaultFolder.trim()) {
     folders.push(options.defaultFolder.trim());
   }
-
   // 2. Per-board folder
   const board = getBoardNameFromUrl(file.url);
   if (board && options.boardFolders && options.boardFolders[board]) {
     folders.push(options.boardFolders[board]);
   }
-
-  // 3. Per-name folder (can be multiple matches, but we'll use the first match found)
+  // 3. Per-name folder (first match only)
   if (options.nameFolders && typeof options.nameFolders === 'object') {
     for (const key in options.nameFolders) {
       const entry = options.nameFolders[key];
       if (!entry || !entry.string || !entry.label || !entry.folder) continue;
       let match = false;
-      if (entry.label === 'filename' && file.originalFilename && file.originalFilename.includes(entry.string)) {
+      if (
+        entry.label === 'filename' &&
+        typeof file.originalFilename === 'string' &&
+        file.originalFilename.includes(entry.string)
+      ) {
         match = true;
       }
-      if (entry.label === 'name' && file.name && file.name.includes(entry.string)) {
+      if (
+        entry.label === 'name' &&
+        typeof file.name === 'string' &&
+        file.name.includes(entry.string)
+      ) {
         match = true;
       }
       if (match) {
@@ -90,10 +92,8 @@ function getFolderPathForFile(file, options) {
   // Join folders with /
   return folders.join('/');
 }
-
 // Message Handler
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('Received message:', message);
   // Handle cancel request
   if (message.action === "cancelDownload") {
     cancelRequested = true;
@@ -114,7 +114,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const imageThreshold = typeof message.imageThreshold === 'number' ? message.imageThreshold : 20;
     const timeoutSeconds = typeof message.timeoutSeconds === 'number' ? message.timeoutSeconds : 2;
     const useOriginalFilenames = !!message.useOriginalFilenames;
-
     // Fetch all relevant options from storage
     chrome.storage.sync.get([
       'overwriteExistingFiles',
@@ -251,7 +250,6 @@ async function zipAndDownloadImages(
       const blob = await response.blob();
       // Place file in correct folder inside zip
       zip.file(folder ? `${folder}/${filename}` : filename, blob);
-
       // Send progress update to content script
       if (tabId) {
         chrome.tabs.sendMessage(tabId, {
