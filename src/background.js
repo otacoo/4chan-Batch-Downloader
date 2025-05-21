@@ -71,14 +71,15 @@ function getFolderPathForFile(file, options) {
       if (
         entry.label === 'filename' &&
         typeof file.originalFilename === 'string' &&
-        file.originalFilename.includes(entry.string)
+        // exact match (change === entry.string to '.includes(entry.string)' for case-insensitive)
+        file.originalFilename === entry.string
       ) {
         match = true;
       }
       if (
         entry.label === 'name' &&
         typeof file.name === 'string' &&
-        file.name.includes(entry.string)
+        file.name === entry.string // exact match
       ) {
         match = true;
       }
@@ -92,6 +93,7 @@ function getFolderPathForFile(file, options) {
   // Join folders with /
   return folders.join('/');
 }
+
 // Message Handler
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // Handle cancel request
