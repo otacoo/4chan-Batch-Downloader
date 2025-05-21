@@ -8,6 +8,7 @@
     let zipBtn = null;
     let notificationDiv = null;
     let noDialogBtn = null;
+    let ibdContainer = null; // Container for all extension UI
     let modifierKey = 'alt'; // default
     let showNoDialogBtn = false;
     let showIndividualBtn = true;
@@ -21,6 +22,10 @@
     let buttonPosition = 'top-right';
     // Cancel and busy state
     let isFetching = false;
+
+    // CSS class for glowing border
+    const SELECTED_CLASS = 'ibd-selected-thumb';
+    const UI_CONTAINER_ID = 'ibd-ui-container';
 
     // Fetching progress: listen for progress updates from background
     chrome.runtime.onMessage.addListener((message) => {
@@ -38,14 +43,39 @@
         }
     });
 
-    // CSS class for glowing border
-    const SELECTED_CLASS = 'ibd-selected-thumb';
+    // Helper: ensure the UI container exists and is attached to the DOM
+    function ensureibdContainer() {
+        if (!ibdContainer) {
+            ibdContainer = document.getElementById(UI_CONTAINER_ID);
+            if (!ibdContainer) {
+                ibdContainer = document.createElement('div');
+                ibdContainer.id = UI_CONTAINER_ID;
+                ibdContainer.style.position = 'fixed';
+                ibdContainer.style.zIndex = 99999;
+                ibdContainer.style.pointerEvents = 'none'; // allow clicks to pass through except for children
+                document.body.appendChild(ibdContainer);
+            }
+        }
+        // Reset container position for stacking
+        ibdContainer.style.right = '0';
+        ibdContainer.style.top = '0';
+        ibdContainer.style.bottom = 'auto';
+        ibdContainer.style.left = 'auto';
+    }
 
     // Helper: create floating download buttons
     function createDownloadButtons() {
-        if (downloadBtn) downloadBtn.remove();
-        if (zipBtn) zipBtn.remove();
-        if (noDialogBtn) noDialogBtn.remove();
+        ensureibdContainer();
+
+        // Remove old buttons and notification from container
+        if (downloadBtn && downloadBtn.parentNode) downloadBtn.parentNode.removeChild(downloadBtn);
+        if (zipBtn && zipBtn.parentNode) zipBtn.parentNode.removeChild(zipBtn);
+        if (noDialogBtn && noDialogBtn.parentNode) noDialogBtn.parentNode.removeChild(noDialogBtn);
+        if (notificationDiv && notificationDiv.parentNode) notificationDiv.parentNode.removeChild(notificationDiv);
+
+        downloadBtn = null;
+        zipBtn = null;
+        noDialogBtn = null;
 
         let buttonList = [];
         if (showNoDialogBtn) buttonList.push({ type: 'nodialog' });
@@ -86,7 +116,8 @@
             }
             styleButton(btn, yOffset);
             btn.addEventListener('click', clickHandler);
-            document.body.appendChild(btn);
+            btn.style.pointerEvents = 'auto'; // allow clicks
+            ibdContainer.appendChild(btn);
         });
 
         createOrMoveNotificationDiv(totalButtons, buttonHeight);
@@ -94,11 +125,11 @@
     }
 
     // Helper: style floating buttons
-    function styleButton(btn, yOffsetPx) {
+    function styleButton(btn, yOffsetPx, totalButtons) {
         btn.style.position = 'fixed';
-        btn.style.right = '32px';
+        btn.style.right = '45px';
         btn.style.zIndex = 99999;
-        btn.style.padding = '16px 24px';
+        btn.style.padding = '13px 20px';
         btn.style.background = '#2d8cf0';
         btn.style.color = '#fff';
         btn.style.border = 'none';
@@ -107,8 +138,9 @@
         btn.style.fontSize = '16px';
         btn.style.cursor = 'pointer';
         btn.style.display = 'none';
-        btn.style.marginBottom = '12px';
         btn.style.transition = 'background 0.2s, color 0.2s';
+        btn.style.pointerEvents = 'auto';
+        // Positioning
         if (buttonPosition === 'top-right') {
             btn.style.top = `calc(10% + ${yOffsetPx}px)`;
             btn.style.bottom = '';
@@ -116,12 +148,13 @@
             btn.style.top = `calc(35% + ${yOffsetPx}px)`;
             btn.style.bottom = '';
         } else if (buttonPosition === 'bottom-right') {
+            // Stack upward from the bottom
             btn.style.top = '';
             btn.style.bottom = `calc(10% + ${yOffsetPx}px)`;
         }
     }
 
-    // Helper: create or move notification div below the buttons
+    // Helper: create or move notification div below/above the buttons
     function createOrMoveNotificationDiv(totalButtons, buttonHeight) {
         if (!notificationDiv) {
             notificationDiv = document.createElement('div');
@@ -138,20 +171,24 @@
             notificationDiv.style.fontSize = '15px';
             notificationDiv.style.display = 'none';
             notificationDiv.style.minWidth = '220px';
+            notificationDiv.style.pointerEvents = 'auto';
         }
+        // Positioning
         if (buttonPosition === 'top-right') {
-            notificationDiv.style.top = `calc(10% + ${totalButtons * buttonHeight}px)`;
+            // Notification below the last button
+            notificationDiv.style.top = `calc(10% + ${totalButtons * buttonHeight}px + 8px)`;
             notificationDiv.style.bottom = '';
         } else if (buttonPosition === 'middle') {
-            notificationDiv.style.top = `calc(35% + ${totalButtons * buttonHeight}px)`;
+            notificationDiv.style.top = `calc(35% + ${totalButtons * buttonHeight}px + 8px)`;
             notificationDiv.style.bottom = '';
         } else if (buttonPosition === 'bottom-right') {
+            // Notification above the topmost button
             notificationDiv.style.top = '';
-            notificationDiv.style.bottom = `calc(-35% + ${totalButtons * buttonHeight}px)`;
+            notificationDiv.style.bottom = `calc(10% + ${totalButtons * buttonHeight}px + 8px)`;
         }
         notificationDiv.style.right = '32px';
         if (!notificationDiv.parentNode) {
-            document.body.appendChild(notificationDiv);
+            ibdContainer.appendChild(notificationDiv);
         }
     }
 
@@ -197,6 +234,7 @@
         if (type === 'individual' && downloadBtn) {
             downloadBtn.textContent = 'Cancel';
             downloadBtn.style.background = '#e74c3c';
+            downloadBtn.classList.add('ibd-cancel-btn');
             downloadBtn.removeEventListener('click', onDownloadBtnClick);
             downloadBtn.removeEventListener('click', cancelFetch);
             downloadBtn.addEventListener('click', cancelFetch);
@@ -204,6 +242,7 @@
         if (type === 'zip' && zipBtn) {
             zipBtn.textContent = 'Cancel';
             zipBtn.style.background = '#e74c3c';
+            zipBtn.classList.add('ibd-cancel-btn');
             zipBtn.removeEventListener('click', onZipBtnClick);
             zipBtn.removeEventListener('click', cancelFetch);
             zipBtn.addEventListener('click', cancelFetch);
@@ -211,6 +250,7 @@
         if (type === 'nodialog' && noDialogBtn) {
             noDialogBtn.textContent = 'Cancel';
             noDialogBtn.style.background = '#e74c3c';
+            noDialogBtn.classList.add('ibd-cancel-btn');
             noDialogBtn.removeEventListener('click', onNoDialogBtnClick);
             noDialogBtn.removeEventListener('click', cancelFetch);
             noDialogBtn.addEventListener('click', cancelFetch);
@@ -220,6 +260,7 @@
     function resetButtons() {
         isFetching = false;
         if (downloadBtn) {
+            downloadBtn.classList.remove('ibd-cancel-btn');
             downloadBtn.textContent = 'Download Selected';
             downloadBtn.style.background = '#2d8cf0';
             downloadBtn.disabled = false;
@@ -228,6 +269,7 @@
             downloadBtn.addEventListener('click', onDownloadBtnClick);
         }
         if (zipBtn) {
+            zipBtn.classList.remove('ibd-cancel-btn');
             zipBtn.textContent = 'Download as ZIP';
             zipBtn.style.background = '#2d8cf0';
             zipBtn.disabled = false;
@@ -236,6 +278,7 @@
             zipBtn.addEventListener('click', onZipBtnClick);
         }
         if (noDialogBtn) {
+            noDialogBtn.classList.remove('ibd-cancel-btn');
             noDialogBtn.textContent = selected.size > 0 ? `Download (${selected.size})` : 'Download';
             noDialogBtn.style.background = '#2d8cf0';
             noDialogBtn.disabled = false;
