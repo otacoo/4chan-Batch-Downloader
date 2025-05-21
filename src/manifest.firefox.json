@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Four Batch Downloader",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Batch download media from 4chan by ALT+CLICKing thumbnails.",
   "browser_specific_settings": {
     "gecko": {
@@ -16,7 +16,7 @@
     "tabs"
   ],
   "host_permissions": [
-    "*://*/*"
+    "*://boards.4chan.org/*"
   ],
   "background": {
     "scripts": [

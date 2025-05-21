@@ -1,3 +1,6 @@
+## [2.0.1] - 2025-05-21
+- Update host permissions, we should only run on `boards.4chan.org`
+
 ## [2.0.0] - 2025-05-21
 - **New Options:**
   - Overwrite existing files with the same filename
