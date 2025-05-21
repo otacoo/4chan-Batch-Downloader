@@ -1,42 +1,16 @@
 # Four-Batch-Downloader ![icon48](https://github.com/user-attachments/assets/b53cb537-c3d6-48a9-bdef-d71433f34228)
 
-A browser extension to batch download images and videos from 4chan with ease.
+A browser extension to batch download images and videos from 4chan with ease.\
 Select images by ALT+CLICK (or your chosen modifier), then download them all at once with a single click.
 
-Need a userscript instead?
-Check out: [@3nly's](https://gist.github.com/3nly/907b94181d75a39c5effb622266360df) userscript
+Need a userscript instead?\
+Check out: [@3nly's](https://gist.github.com/3nly/907b94181d75a39c5effb622266360df) userscript, this extension's inspiration.
+
+## Screenshot:
+
+![screenshot](https://github.com/user-attachments/assets/5a715735-2e5f-4bab-a8a4-637921c04a12)
 
 
-## Features
-
-- **Batch select images:**
-  - Modifier (configurable: <kbd>Alt</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Meta</kbd>) + Click
-  - Modifier + Click to select all images in a thread
-  
-- **Download selected images:**
-  - Instantly
-  - Individually (with Save as... dialog)
-  - As a ZIP archive
-
-- **Download with original filenames**
-
-- **Various download sorting options:**
-  - Per Board
-  - Per Name
-  - Per Filename 
-
-- **Download throttling:**
-  - Sets a threshold and timeout to avoid rate limits (recommended)
-
-- **Customizable button position:**
-  - Top Right, Middle, Bottom Right
-
-- **Cancel downloads in progress**
-
-- **Options page**
-  
-- **Cross-browser:**
-  - Chrome (Manifest V3) and Firefox supported
 
 ## Installation
 
