@@ -5,6 +5,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   // --- DOM Elements ---
   const modifierKeySelect = document.getElementById('modifierKey');
+  const selectAllOnDoubleClick = document.getElementById('selectAllOnDoubleClick');
   const useOriginalFilenames = document.getElementById('useOriginalFilenames');
   const showNoDialogBtn = document.getElementById('showNoDialogBtn');
   const showIndividualBtn = document.getElementById('showIndividualBtn');
@@ -39,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Default values ---
   const DEFAULTS = {
     modifierKey: 'alt',
+    selectAllOnDoubleClick: false,
     useOriginalFilenames: false,
     showNoDialogBtn: false,
     showIndividualBtn: true,
@@ -77,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
   chrome.storage.sync.get(Object.keys(DEFAULTS), (items) => {
     items = items || {};
     modifierKeySelect.value = getOption(items, 'modifierKey');
+    selectAllOnDoubleClick.checked = getOption(items, 'selectAllOnDoubleClick');
     buttonColorInput.value = getOption(items, 'buttonColor');
     glowColorInput.value = getOption(items, 'glowColor');
     useOriginalFilenames.checked = getOption(items, 'useOriginalFilenames');
@@ -195,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     chrome.storage.sync.set({
       modifierKey: modifierKeySelect.value,
+      selectAllOnDoubleClick: selectAllOnDoubleClick.checked,
       buttonColor: buttonColorInput.value || DEFAULTS.buttonColor,
       glowColor: glowColorInput.value || DEFAULTS.glowColor,
       useOriginalFilenames: useOriginalFilenames.checked,
@@ -223,6 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.sync.set(DEFAULTS, () => {
       // Update UI to reflect defaults
       modifierKeySelect.value = DEFAULTS.modifierKey;
+      selectAllOnDoubleClick.checked = DEFAULTS.selectAllOnDoubleClick;
       buttonColorInput.value = DEFAULTS.buttonColor;
       glowColorInput.value = DEFAULTS.glowColor;
       useOriginalFilenames.checked = DEFAULTS.useOriginalFilenames;

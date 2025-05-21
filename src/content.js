@@ -4,6 +4,7 @@
 
 (function () {
     const selected = new Set();
+    let selectAllOnDoubleClick = false;
     let downloadBtn = null;
     let zipBtn = null;
     let notificationDiv = null;
@@ -462,6 +463,19 @@
         }
     }
 
+    // Helper: Double-click to select all
+    function onThumbDoubleClick(e) {
+        // Select all images
+        getAllThumbs().forEach(thumb => {
+            const url = thumb.href;
+            if (!selected.has(url)) {
+                selected.add(url);
+                thumb.classList.add(SELECTED_CLASS);
+            }
+        });
+        updateButtonVisibility();
+    }
+
     // Event handler for configurable modifier key + click on thumbnail
     function onThumbMouseDown(e) {
         if (e.button !== 0) return; // Only left mouse button
@@ -497,6 +511,11 @@
 
             thumb.removeEventListener('click', onThumbClick, true);
             thumb.addEventListener('click', onThumbClick, true);
+
+            thumb.removeEventListener('dblclick', onThumbDoubleClick, true);
+            if (selectAllOnDoubleClick) {
+                thumb.addEventListener('dblclick', onThumbDoubleClick, true);
+            }
         });
     }
 
@@ -516,7 +535,7 @@
         }
 
         chrome.storage.sync.get([
-            'modifierKey', 'showNoDialogBtn', 'showIndividualBtn', 'showZipBtn',
+            'modifierKey', 'selectAllOnDoubleClick', 'showNoDialogBtn', 'showIndividualBtn', 'showZipBtn',
             'boardFolders', 'defaultFolder', 'imageThreshold', 'timeoutSeconds', 'buttonPosition', 'useOriginalFilenames', 'buttonColor', 'glowColor', 'nameFolders'
         ], (items) => {
             items = items || {};
@@ -526,6 +545,7 @@
             imageThreshold = typeof items.imageThreshold === 'number' ? items.imageThreshold : 20;
             timeoutSeconds = typeof items.timeoutSeconds === 'number' ? items.timeoutSeconds : 2;
             modifierKey = items.modifierKey || 'alt';
+            selectAllOnDoubleClick = !!items.selectAllOnDoubleClick;
             showIndividualBtn = items.showIndividualBtn !== false;
             showZipBtn = !!items.showZipBtn;
             showNoDialogBtn = !!items.showNoDialogBtn;
@@ -547,7 +567,7 @@
                 changes.imageThreshold || changes.timeoutSeconds || changes.buttonPosition || changes.useOriginalFilenames || changes.buttonColor || changes.glowColor || changes.nameFolders
             )) {
                 chrome.storage.sync.get([
-                    'modifierKey', 'showNoDialogBtn', 'showIndividualBtn', 'showZipBtn',
+                    'modifierKey', 'selectAllOnDoubleClick', 'showNoDialogBtn', 'showIndividualBtn', 'showZipBtn',
                     'boardFolders', 'defaultFolder', 'imageThreshold', 'timeoutSeconds', 'buttonPosition', 'useOriginalFilenames', 'buttonColor', 'glowColor', 'nameFolders'
                 ], (items) => {
                     items = items || {};
@@ -557,6 +577,7 @@
                     imageThreshold = typeof items.imageThreshold === 'number' ? items.imageThreshold : 20;
                     timeoutSeconds = typeof items.timeoutSeconds === 'number' ? items.timeoutSeconds : 2;
                     modifierKey = items.modifierKey || 'alt';
+                    selectAllOnDoubleClick = !!items.selectAllOnDoubleClick;
                     showNoDialogBtn = !!items.showNoDialogBtn;
                     showIndividualBtn = items.showIndividualBtn !== false;
                     showZipBtn = !!items.showZipBtn;

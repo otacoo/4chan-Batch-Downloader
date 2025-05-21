@@ -20,11 +20,6 @@
             background: #f8f9fb;
         }
 
-        h1 {
-            margin: -0.4em 0 0.4em 0;
-            text-align: center;
-        }
-
         #options-container {
             display: flex;
             gap: 40px;
@@ -181,13 +176,14 @@
 </head>
 
 <body>
-    <h1>4chan Batch Downloader Options</h1>
     <form id="options-form">
         <div id="options-container">
             <!-- Main options (left column) -->
             <div id="main-options">
+                <h2><img type="image/png" src="/icons/icon16.png" title="4chan Batch Downloader"
+                        style="margin-right: 10px;">Main Options</h2>
                 <div class="option-group">
-                    <h3>Selection & Download Buttons</h3>
+                    <h3>Selection</h3>
                     <label>
                         Shortcut key for selecting images:
                         <select id="modifierKey">
@@ -197,6 +193,11 @@
                             <option value="meta">Meta (Command/Windows)</option>
                         </select> + Click
                     </label>
+                    <label>
+                        <input type="checkbox" id="selectAllOnDoubleClick">
+                        Double-click an image to select all images (timeout rec.)
+                    </label>
+                    <h3>Download Buttons</h3>
                     <label>
                         <input type="checkbox" id="showNoDialogBtn">
                         Show button to download all images immediately (no dialog)
@@ -269,6 +270,7 @@
             <!-- Side options (middle column) -->
             <div id="side-options">
                 <!-- Default Download Folder -->
+                <h2>Sorting</h2>
                 <div class="option-group">
                     <h3>Default Download Folder</h3>
                     <input type="text" id="defaultFolder" placeholder="e.g. 4chan-images">
@@ -320,7 +322,10 @@
                         <span style="font-size: 0.95em; color: #888;">
                             (e.g. String: <code>cat</code>, Label: <b>Filename</b>, Folder: <code>Cats</code> will save
                             any file whose filename contains "cat" to the "Cats" folder)
+                            <br>
                         </span>
+                        <br>
+                        <strong>CASE-SENSITIVE</strong>
                     </div>
                     <div>
                         <br>
@@ -348,8 +353,8 @@
             </div>
             <!-- Styling options (right column) -->
             <div id="styling-options">
+                <h2>Styling</h2>
                 <div class="option-group">
-                    <h3>Styling</h3>
                     <label>
                         Download button position:
                         <select id="buttonPosition">
@@ -358,7 +363,6 @@
                             <option value="bottom-right">Bottom Right</option>
                         </select>
                     </label>
-                    <!-- Add more styling options here in the future -->
                     <label>
                         Download button color:
                         <input type="color" id="buttonColor" value="#2d8cf0">
