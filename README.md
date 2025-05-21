@@ -1,10 +1,10 @@
 # Four-Batch-Downloader ![icon48](https://github.com/user-attachments/assets/b53cb537-c3d6-48a9-bdef-d71433f34228)
 
-A browser extension to batch download images and videos from 4chan with ease.
+A browser extension to batch download images and videos from 4chan with ease.\
 Select images by ALT+CLICK (or your chosen modifier), then download them all at once with a single click.
 
-Need a userscript instead?
-Check out: [@3nly's](https://gist.github.com/3nly/907b94181d75a39c5effb622266360df) userscript
+Need a userscript instead?\
+Check out: [@3nly's](https://gist.github.com/3nly/907b94181d75a39c5effb622266360df) userscript, this extension's inspiration.
 
 ## Screenshot:
 
