@@ -5,7 +5,7 @@
   "description": "Batch download media from 4chan by ALT+CLICKing thumbnails.",
   "browser_specific_settings": {
     "gecko": {
-      "id": "otacoo@4chan-batch-downloader.cool",
+      "id": "otacoo@four-batch-downloader.org",
       "strict_min_version": "126.0",
       "update_url": "https://github.com/otacoo/4chan-batch-downloader/raw/refs/heads/main/dist/4chan-batch-downloader-firefox.zip"
     }
