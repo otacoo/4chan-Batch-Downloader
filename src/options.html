@@ -3,10 +3,17 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>4chan Batch Downloader Options</title>
-    <!-- Add favicon -->
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="/icons/icon16.png">
     <style>
+        @-moz-document url-prefix() {
+            body {
+                font-size: smaller;
+            }
+        }
+
         body {
             font-family: sans-serif;
             margin: 2em;
@@ -171,7 +178,7 @@
                     </label>
                     <div id="noDialogNote"
                         style="display:none; max-width: 90%; background: #fffbe6; border: 1px solid #ffe58f; color: #ad8b00; border-radius: 6px; padding: 10px 16px; margin: 16px 0; font-size: 15px;">
-                        <b>Note:</b> For the "Download with no dialog" feature to work without dialogs, you may have to
+                        <b>Note:</b> For this feature to work without dialogs, you may have to
                         disable
                         <i>“Ask where to save each file before downloading”</i> in your browser's download settings.
                         <br>
