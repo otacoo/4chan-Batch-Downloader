@@ -130,12 +130,11 @@
         btn.style.right = '45px';
         btn.style.zIndex = 99999;
         btn.style.padding = '13px 20px';
-        btn.style.background = '#2d8cf0';
         btn.style.color = '#fff';
         btn.style.border = 'none';
         btn.style.borderRadius = '8px';
         btn.style.boxShadow = '0 2px 12px rgba(0,0,0,0.2)';
-        btn.style.fontSize = '16px';
+        btn.style.fontSize = '15px';
         btn.style.cursor = 'pointer';
         btn.style.display = 'none';
         btn.style.transition = 'background 0.2s, color 0.2s';
@@ -262,7 +261,6 @@
         if (downloadBtn) {
             downloadBtn.classList.remove('ibd-cancel-btn');
             downloadBtn.textContent = 'Download Selected';
-            downloadBtn.style.background = '#2d8cf0';
             downloadBtn.disabled = false;
             downloadBtn.removeEventListener('click', cancelFetch);
             downloadBtn.removeEventListener('click', onDownloadBtnClick);
@@ -271,7 +269,6 @@
         if (zipBtn) {
             zipBtn.classList.remove('ibd-cancel-btn');
             zipBtn.textContent = 'Download as ZIP';
-            zipBtn.style.background = '#2d8cf0';
             zipBtn.disabled = false;
             zipBtn.removeEventListener('click', cancelFetch);
             zipBtn.removeEventListener('click', onZipBtnClick);
@@ -280,7 +277,6 @@
         if (noDialogBtn) {
             noDialogBtn.classList.remove('ibd-cancel-btn');
             noDialogBtn.textContent = selected.size > 0 ? `Download (${selected.size})` : 'Download';
-            noDialogBtn.style.background = '#2d8cf0';
             noDialogBtn.disabled = false;
             noDialogBtn.removeEventListener('click', cancelFetch);
             noDialogBtn.removeEventListener('click', onNoDialogBtnClick);
@@ -494,11 +490,20 @@
     // Initial setup
     function init() {
         // Load options and create buttons on startup
+        function setIbdCssVariables(buttonColor, glowColor) {
+            ensureibdContainer();
+            if (!ibdContainer) return;
+            document.documentElement.style.setProperty('--ibd-button-color', buttonColor || '#2d8cf0');
+            document.documentElement.style.setProperty('--ibd-glow-color', glowColor || '#2d8cf0');
+        }
+
         chrome.storage.sync.get([
             'modifierKey', 'showNoDialogBtn', 'showIndividualBtn', 'showZipBtn',
-            'boardFolders', 'defaultFolder', 'imageThreshold', 'timeoutSeconds', 'buttonPosition', 'useOriginalFilenames'
+            'boardFolders', 'defaultFolder', 'imageThreshold', 'timeoutSeconds', 'buttonPosition', 'useOriginalFilenames', 'buttonColor', 'glowColor'
         ], (items) => {
             items = items || {};
+            buttonColor = items.buttonColor || '#2d8cf0';
+            glowColor = items.glowColor || '#2d8cf0';
             buttonPosition = items.buttonPosition || 'top-right';
             imageThreshold = typeof items.imageThreshold === 'number' ? items.imageThreshold : 20;
             timeoutSeconds = typeof items.timeoutSeconds === 'number' ? items.timeoutSeconds : 2;
@@ -509,6 +514,7 @@
             boardFolders = items.boardFolders || {};
             defaultFolder = items.defaultFolder || '';
             useOriginalFilenames = !!items.useOriginalFilenames;
+            setIbdCssVariables(buttonColor, glowColor);
             createDownloadButtons();
             attachListeners();
             observer.observe(document.body, { childList: true, subtree: true });
@@ -519,13 +525,15 @@
             if (area === 'sync' && (
                 changes.showIndividualBtn || changes.showZipBtn || changes.showNoDialogBtn ||
                 changes.modifierKey || changes.boardFolders || changes.defaultFolder ||
-                changes.imageThreshold || changes.timeoutSeconds || changes.buttonPosition || changes.useOriginalFilenames
+                changes.imageThreshold || changes.timeoutSeconds || changes.buttonPosition || changes.useOriginalFilenames || changes.buttonColor || changes.glowColor
             )) {
                 chrome.storage.sync.get([
                     'modifierKey', 'showNoDialogBtn', 'showIndividualBtn', 'showZipBtn',
-                    'boardFolders', 'defaultFolder', 'imageThreshold', 'timeoutSeconds', 'buttonPosition', 'useOriginalFilenames'
+                    'boardFolders', 'defaultFolder', 'imageThreshold', 'timeoutSeconds', 'buttonPosition', 'useOriginalFilenames', 'buttonColor', 'glowColor'
                 ], (items) => {
                     items = items || {};
+                    buttonColor = items.buttonColor || '#2d8cf0';
+                    glowColor = items.glowColor || '#2d8cf0';
                     buttonPosition = items.buttonPosition || 'top-right';
                     imageThreshold = typeof items.imageThreshold === 'number' ? items.imageThreshold : 20;
                     timeoutSeconds = typeof items.timeoutSeconds === 'number' ? items.timeoutSeconds : 2;
@@ -536,6 +544,7 @@
                     boardFolders = items.boardFolders || {};
                     defaultFolder = items.defaultFolder || '';
                     useOriginalFilenames = !!items.useOriginalFilenames;
+                    setIbdCssVariables(buttonColor, glowColor);
                     createDownloadButtons();
                 });
             }

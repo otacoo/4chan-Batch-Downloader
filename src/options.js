@@ -22,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const status = document.getElementById('status');
   const resetBtn = document.getElementById('resetOptions');
   // Styling
+  const buttonColorInput = document.getElementById('buttonColor');
+  const glowColorInput = document.getElementById('glowColor');
   const buttonPositionSelect = document.getElementById('buttonPosition');
   const showNoDialogNote = document.getElementById('noDialogNote');
 
@@ -39,6 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
     imageThreshold: 20,
     timeoutSeconds: 2,
     defaultFolder: '',
+    buttonColor: '#2d8cf0',
+    glowColor: '#2d8cf0',
     boardFolders: {}
   };
 
@@ -61,6 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
   chrome.storage.sync.get(Object.keys(DEFAULTS), (items) => {
     items = items || {};
     modifierKeySelect.value = getOption(items, 'modifierKey');
+    buttonColorInput.value = getOption(items, 'buttonColor');
+    glowColorInput.value = getOption(items, 'glowColor');
     useOriginalFilenames.checked = getOption(items, 'useOriginalFilenames');
     showNoDialogBtn.checked = getOption(items, 'showNoDialogBtn');
     showIndividualBtn.checked = getOption(items, 'showIndividualBtn');
@@ -124,6 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     chrome.storage.sync.set({
       modifierKey: modifierKeySelect.value,
+      buttonColor: buttonColorInput.value || DEFAULTS.buttonColor,
+      glowColor: glowColorInput.value || DEFAULTS.glowColor,
       useOriginalFilenames: useOriginalFilenames.checked,
       showNoDialogBtn: showNoDialogBtn.checked,
       showIndividualBtn: showIndividualBtn.checked,
@@ -148,6 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.sync.set(DEFAULTS, () => {
       // Update UI to reflect defaults
       modifierKeySelect.value = DEFAULTS.modifierKey;
+      buttonColorInput.value = DEFAULTS.buttonColor;
+      glowColorInput.value = DEFAULTS.glowColor;
       useOriginalFilenames.checked = DEFAULTS.useOriginalFilenames;
       showNoDialogBtn.checked = DEFAULTS.showNoDialogBtn;
       showIndividualBtn.checked = DEFAULTS.showIndividualBtn;
