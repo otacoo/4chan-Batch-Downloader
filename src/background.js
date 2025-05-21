@@ -18,7 +18,8 @@ const DEFAULTS = {
   imageThreshold: 20,
   timeoutSeconds: 2,
   defaultFolder: '',
-  boardFolders: {}
+  boardFolders: {},
+  nameFolders: {}
 };
 
 chrome.runtime.onInstalled.addListener((details) => {
@@ -45,6 +46,51 @@ function getBoardNameFromFiles(files) {
   return match ? match[1] : '';
 }
 
+// Helper: get board name from a single file url
+function getBoardNameFromUrl(url) {
+  const match = url.match(/:\/\/i\.4cdn\.org\/([a-z0-9]+)\//i);
+  return match ? match[1] : '';
+}
+
+// Helper: build the full folder path for a file
+function getFolderPathForFile(file, options) {
+  // options: { defaultFolder, boardFolders, nameFolders }
+  let folders = [];
+
+  // 1. Default folder
+  if (options.defaultFolder && options.defaultFolder.trim()) {
+    folders.push(options.defaultFolder.trim());
+  }
+
+  // 2. Per-board folder
+  const board = getBoardNameFromUrl(file.url);
+  if (board && options.boardFolders && options.boardFolders[board]) {
+    folders.push(options.boardFolders[board]);
+  }
+
+  // 3. Per-name folder (can be multiple matches, but we'll use the first match found)
+  if (options.nameFolders && typeof options.nameFolders === 'object') {
+    for (const key in options.nameFolders) {
+      const entry = options.nameFolders[key];
+      if (!entry || !entry.string || !entry.label || !entry.folder) continue;
+      let match = false;
+      if (entry.label === 'filename' && file.originalFilename && file.originalFilename.includes(entry.string)) {
+        match = true;
+      }
+      if (entry.label === 'name' && file.name && file.name.includes(entry.string)) {
+        match = true;
+      }
+      if (match) {
+        folders.push(entry.folder);
+        // Remove break to allow multiple per-name matches
+        break;
+      }
+    }
+  }
+  // Join folders with /
+  return folders.join('/');
+}
+
 // Message Handler
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('Received message:', message);
@@ -63,39 +109,53 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     isDownloading = true;
     cancelRequested = false;
-    const folder = message.folder || '';
     const tabId = sender.tab && sender.tab.id;
     const noDialog = !!message.noDialog;
     const imageThreshold = typeof message.imageThreshold === 'number' ? message.imageThreshold : 20;
     const timeoutSeconds = typeof message.timeoutSeconds === 'number' ? message.timeoutSeconds : 2;
     const useOriginalFilenames = !!message.useOriginalFilenames;
 
-    // Fetch overwriteExistingFiles option from storage
-    chrome.storage.sync.get(['overwriteExistingFiles'], (opts) => {
+    // Fetch all relevant options from storage
+    chrome.storage.sync.get([
+      'overwriteExistingFiles',
+      'defaultFolder',
+      'boardFolders',
+      'nameFolders'
+    ], (opts) => {
       const overwriteExistingFiles = !!opts.overwriteExistingFiles;
+      const defaultFolder = opts.defaultFolder || '';
+      const boardFolders = opts.boardFolders || {};
+      const nameFolders = opts.nameFolders || {};
+
       if (message.zip) {
         chrome.storage.sync.get(['zipNameAddDate', 'zipNameAddBoard', 'zipNameAddCount'], (zipOpts) => {
-          zipAndDownloadImages(message.files, folder, zipOpts, tabId, imageThreshold, timeoutSeconds, useOriginalFilenames)
-            .then((result) => {
-              isDownloading = false;
-              sendResponse && sendResponse({ status: result === 'cancelled' ? "zip_cancelled" : "zip_started" });
-            })
-            .catch(err => {
-              isDownloading = false;
-              sendResponse && sendResponse({ status: "zip_failed", error: err?.toString() });
-            });
+          zipAndDownloadImages(
+            message.files,
+            { defaultFolder, boardFolders, nameFolders },
+            zipOpts,
+            tabId,
+            imageThreshold,
+            timeoutSeconds,
+            useOriginalFilenames
+          ).then((result) => {
+            isDownloading = false;
+            sendResponse && sendResponse({ status: result === 'cancelled' ? "zip_cancelled" : "zip_started" });
+          }).catch(err => {
+            isDownloading = false;
+            sendResponse && sendResponse({ status: "zip_failed", error: err?.toString() });
+          });
         });
         return;
       } else {
         downloadImagesWithProgress(
           message.files,
-          folder,
+          { defaultFolder, boardFolders, nameFolders },
           tabId,
           noDialog,
           imageThreshold,
           timeoutSeconds,
           useOriginalFilenames,
-          overwriteExistingFiles // Pass the option here
+          overwriteExistingFiles
         ).then((result) => {
           isDownloading = false;
           sendResponse && sendResponse({ status: result === 'cancelled' ? "cancelled" : "started" });
@@ -110,13 +170,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 // Downloads images individually, with progress and cancellation support
 async function downloadImagesWithProgress(
   files,
-  folder,
+  folderOptions, // { defaultFolder, boardFolders, nameFolders }
   tabId,
   noDialog,
   imageThreshold = 20,
   timeoutSeconds = 2,
   useOriginalFilenames = false,
-  overwriteExistingFiles = false // Accept as argument
+  overwriteExistingFiles = false
 ) {
   for (let i = 0; i < files.length; i++) {
     if (cancelRequested) {
@@ -126,6 +186,10 @@ async function downloadImagesWithProgress(
     const { url, originalFilename } = files[i];
     let filename = url.split('/').pop().split('?')[0] || `image${i + 1}`;
     if (useOriginalFilenames && originalFilename) filename = originalFilename;
+
+    // Build folder path for this file
+    const folder = getFolderPathForFile(files[i], folderOptions);
+
     if (tabId) {
       chrome.tabs.sendMessage(tabId, {
         type: 'fetch-progress',
@@ -160,7 +224,15 @@ async function downloadImagesWithProgress(
 }
 
 // Fetches all URLs, zips them, and triggers a single download
-async function zipAndDownloadImages(files, folder, opts, tabId, imageThreshold = 20, timeoutSeconds = 2, useOriginalFilenames = false) {
+async function zipAndDownloadImages(
+  files,
+  folderOptions, // { defaultFolder, boardFolders, nameFolders }
+  opts,
+  tabId,
+  imageThreshold = 20,
+  timeoutSeconds = 2,
+  useOriginalFilenames = false
+) {
   const zip = new JSZip();
   for (let i = 0; i < files.length; i++) {
     if (cancelRequested) {
@@ -170,10 +242,15 @@ async function zipAndDownloadImages(files, folder, opts, tabId, imageThreshold =
     const { url, originalFilename } = files[i];
     let filename = url.split('/').pop().split('?')[0] || `image${i + 1}`;
     if (useOriginalFilenames && originalFilename) filename = originalFilename;
+
+    // Build folder path for this file
+    const folder = getFolderPathForFile(files[i], folderOptions);
+
     try {
       const response = await fetch(url);
       const blob = await response.blob();
-      zip.file(filename, blob);
+      // Place file in correct folder inside zip
+      zip.file(folder ? `${folder}/${filename}` : filename, blob);
 
       // Send progress update to content script
       if (tabId) {
@@ -228,7 +305,7 @@ async function zipAndDownloadImages(files, folder, opts, tabId, imageThreshold =
     const dataUrl = reader.result;
     chrome.downloads.download({
       url: dataUrl,
-      filename: folder ? `${folder}/${zipName}` : zipName,
+      filename: zipName,
       saveAs: true
     }, (downloadId) => {
       if (chrome.runtime.lastError) {

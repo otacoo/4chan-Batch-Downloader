@@ -29,6 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Warning elements
   const showNoDialogNote = document.getElementById('noDialogNote');
   const overwriteOriginalWarning = document.getElementById('overwriteOriginalWarning');
+  // Per-Name Download Folder elements
+  const nameFoldersBody = document.getElementById('nameFoldersBody');
+  const newNameString = document.getElementById('newNameString');
+  const newNameLabel = document.getElementById('newNameLabel');
+  const newNameFolder = document.getElementById('newNameFolder');
+  const addNameFolderBtn = document.getElementById('addNameFolder');
 
   // --- Default values ---
   const DEFAULTS = {
@@ -47,10 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
     defaultFolder: '',
     buttonColor: '#2d8cf0',
     glowColor: '#2d8cf0',
-    boardFolders: {}
+    boardFolders: {},
+    nameFolders: {}
   };
 
   let boardFolders = {};
+  let nameFolders = {};
 
   // --- Utility: Fallback to default for missing keys ---
   function getOption(items, key) {
@@ -84,9 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
     timeoutSecondsInput.value = getOption(items, 'timeoutSeconds');
     defaultFolderInput.value = getOption(items, 'defaultFolder');
     boardFolders = getOption(items, 'boardFolders');
+    nameFolders = getOption(items, 'nameFolders');
     renderBoardFolders();
+    renderNameFolders();
     toggleNoDialogNote();
-    updateOverwriteOriginalWarning(); // Initialize warning note on load
+    updateOverwriteOriginalWarning();
   });
 
   // --- Board folders table rendering ---
@@ -131,6 +141,55 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // --- Name folders table rendering ---
+  function renderNameFolders() {
+    nameFoldersBody.innerHTML = '';
+    Object.entries(nameFolders).forEach(([key, entry]) => {
+      const tr = document.createElement('tr');
+
+      const tdString = document.createElement('td');
+      tdString.textContent = entry.string;
+
+      const tdLabel = document.createElement('td');
+      tdLabel.textContent = entry.label.charAt(0).toUpperCase() + entry.label.slice(1);
+
+      const tdFolder = document.createElement('td');
+      tdFolder.textContent = entry.folder;
+
+      const tdRemove = document.createElement('td');
+      const removeBtn = document.createElement('span');
+      removeBtn.className = 'remove-btn';
+      removeBtn.setAttribute('data-key', key);
+      removeBtn.textContent = 'Remove';
+      removeBtn.addEventListener('click', () => {
+        delete nameFolders[key];
+        renderNameFolders();
+      });
+      tdRemove.appendChild(removeBtn);
+
+      tr.appendChild(tdString);
+      tr.appendChild(tdLabel);
+      tr.appendChild(tdFolder);
+      tr.appendChild(tdRemove);
+
+      nameFoldersBody.appendChild(tr);
+    });
+  }
+
+  addNameFolderBtn.addEventListener('click', () => {
+    const string = newNameString.value.trim();
+    const label = newNameLabel.value;
+    const folder = newNameFolder.value.trim();
+    if (string && label && folder) {
+      // Use a composite key to avoid duplicates
+      const key = `${label}:${string}:${folder}`;
+      nameFolders[key] = { string, label, folder };
+      renderNameFolders();
+      newNameString.value = '';
+      newNameFolder.value = '';
+    }
+  });
+
   // --- Save Options (submit) ---
   document.getElementById('options-form').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -150,7 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
       imageThreshold: parseInt(imageThresholdInput.value, 10) || DEFAULTS.imageThreshold,
       timeoutSeconds: parseInt(timeoutSecondsInput.value, 10) || DEFAULTS.timeoutSeconds,
       defaultFolder: defaultFolderInput.value,
-      boardFolders: boardFolders
+      boardFolders: boardFolders,
+      nameFolders: nameFolders
     }, () => {
       status.textContent = 'Options saved!';
       setTimeout(() => status.textContent = '', 1500);
@@ -178,7 +238,9 @@ document.addEventListener('DOMContentLoaded', () => {
       timeoutSecondsInput.value = DEFAULTS.timeoutSeconds;
       defaultFolderInput.value = DEFAULTS.defaultFolder;
       boardFolders = {};
+      nameFolders = {};
       renderBoardFolders();
+      renderNameFolders();
       status.textContent = 'Options reset to defaults!';
       setTimeout(() => status.textContent = '', 1500);
       toggleNoDialogNote();

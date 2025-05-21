@@ -72,6 +72,10 @@
             width: 80px;
         }
 
+        #newNameLabel {
+            width: 100px;
+        }
+
         button {
             margin-top: 1em;
         }
@@ -94,6 +98,27 @@
         .remove-btn {
             color: #c00;
             cursor: pointer;
+        }
+
+        .warning-note,
+        .how-to-use-note {
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin: 8px 0 0 0;
+            font-size: 12px;
+        }
+
+        .warning-note {
+            display: none;
+            background: #fffbe6;
+            border: 1px solid #ffe58f;
+            color: #ad8b00;
+        }
+
+        .how-to-use-note {
+            background: #f5f5f5;
+            border: 1px solid #dddddd;
+            color: #444;
         }
 
         /* Center the action buttons */
@@ -176,8 +201,7 @@
                         <input type="checkbox" id="showNoDialogBtn">
                         Show button to download all images immediately (no dialog)
                     </label>
-                    <div id="noDialogNote"
-                        style="display:none; max-width: 90%; background: #fffbe6; border: 1px solid #ffe58f; color: #ad8b00; border-radius: 6px; padding: 10px 16px; margin: 16px 0; font-size: 15px;">
+                    <div id="noDialogNote" class="warning-note">
                         <b>Note:</b> For this feature to work without dialogs, you may have to
                         disable
                         <i>“Ask where to save each file before downloading”</i> in your browser's download settings.
@@ -225,8 +249,7 @@
                         <input type="checkbox" id="overwriteExistingFiles">
                         Overwrite existing files with the same filename
                     </label>
-                    <div id="overwriteOriginalWarning"
-                        style="display:none; background: #fffbe6; border: 1px solid #ffe58f; color: #ad8b00; border-radius: 6px; padding: 10px 16px; margin: 8px 0 0 0; font-size: 15px;">
+                    <div id="overwriteOriginalWarning" class="warning-note">
                         <b>Note:</b> If "Download files with their original filenames" is enabled, files will always be
                         renamed to avoid overwriting, even if "Overwrite existing files" is checked.
                     </div>
@@ -245,29 +268,31 @@
             </div>
             <!-- Side options (middle column) -->
             <div id="side-options">
+                <!-- Default Download Folder -->
                 <div class="option-group">
                     <h3>Default Download Folder</h3>
                     <input type="text" id="defaultFolder" placeholder="e.g. 4chan-images">
-                    <div style="font-size: 1em; color: #555; margin-top: 0.5em;">
+                    <div class="how-to-use-note">
                         <b>How to use:</b>
                         <br>
                         Relative to the browser's default download folder. Leave empty for default browser's folder.<br>
                         If you type, e.g. "4chan" as folder, and your browser's Downloads directory is
-                        <code>/home/user/Downloads</code>, then files will be saved to:<br>
+                        <code>/home/user/Downloads</code>, then files will be saved to:
                         <code>/home/user/Downloads/4chan/</code>
                     </div>
                 </div>
+                <!-- Per-board Download Folders -->
                 <div class="option-group">
                     <h3>Per-board Download Folders</h3>
-                    <div style="font-size: 1em; color: #555; margin-bottom: 0.5em;">
+                    <div class="how-to-use-note">
                         <b>How to use:</b>
                         <br>
                         If you set any Per-board Download folders below, e.g. "a | Anime" then any files from /a/ will
-                        be
-                        saved (as per the previous example) to:<br>
+                        be saved (as per the previous example) to:<br>
                         <code>/home/user/Downloads/4chan/Anime</code>
                     </div>
                     <div>
+                        <br>
                         <input type="text" id="newBoard" placeholder="Board (e.g. a)">
                         <input type="text" id="newFolder" placeholder="Folder Name (e.g. Anime)">
                         <button type="button" id="addBoardFolder">Add</button>
@@ -281,6 +306,42 @@
                             </tr>
                         </thead>
                         <tbody id="boardFoldersBody">
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Per-Name Download Folder -->
+                <div class="option-group">
+                    <h3>Per-Name Download Folder</h3>
+                    <div class="how-to-use-note">
+                        <b>How to use:</b>
+                        <br>
+                        If you set any Per-Name Download folders below, files whose <b>original filename</b> or
+                        <b>poster name</b> contains the specified string will be saved to the specified folder.<br>
+                        <span style="font-size: 0.95em; color: #888;">
+                            (e.g. String: <code>cat</code>, Label: <b>Filename</b>, Folder: <code>Cats</code> will save
+                            any file whose filename contains "cat" to the "Cats" folder)
+                        </span>
+                    </div>
+                    <div>
+                        <br>
+                        <input type="text" id="newNameString" placeholder="String to check for (e.g. cat)">
+                        <select id="newNameLabel">
+                            <option value="filename">Filename</option>
+                            <option value="name">Name</option>
+                        </select>
+                        <input type="text" id="newNameFolder" placeholder="Folder Name (e.g. Cats)">
+                        <button type="button" id="addNameFolder">Add</button>
+                    </div>
+                    <table id="nameFoldersTable">
+                        <thead>
+                            <tr>
+                                <th>String to check for</th>
+                                <th>Label</th>
+                                <th>Folder Name</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="nameFoldersBody">
                         </tbody>
                     </table>
                 </div>
