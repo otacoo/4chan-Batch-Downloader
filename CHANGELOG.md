@@ -1,5 +1,5 @@
 ## [2.0.0] - 2025-05-21
-- *New Options:**
+- **New Options:**
   - Overwrite existing files with the same filename
   - Double click to select all images
   - Per-Name folder sorting
