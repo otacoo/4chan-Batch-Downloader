@@ -1,5 +1,5 @@
 {
-  "name": "4chan-batch-downloader",
+  "name": "four-batch-downloader",
   "version": "1.0.0",
   "description": "Batch download images from 4chan.",
   "main": "background.js",

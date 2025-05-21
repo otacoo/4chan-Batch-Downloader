@@ -60,18 +60,18 @@ module.exports = function (grunt) {
       chrome: {
         cwd: 'dist/chrome/',
         src: ['dist/chrome/**'],
-        dest: 'dist/4chan-batch-downloader-chrome.zip'
+        dest: 'dist/four-batch-downloader-chrome.zip'
       },
       firefox: {
         cwd: 'dist/firefox/',
         src: ['dist/firefox/**'],
-        dest: 'dist/4chan-batch-downloader-firefox.zip',
+        dest: 'dist/four-batch-downloader-firefox.zip',
         compression: 'DEFLATE'
       },
       firefox_xpi: {
         cwd: 'dist/firefox/',
         src: ['dist/firefox/**'],
-        dest: 'dist/4chan-batch-downloader-firefox.xpi',
+        dest: 'dist/four-batch-downloader-firefox.xpi',
         compression: 'DEFLATE'
       }
     }

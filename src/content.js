@@ -27,7 +27,7 @@
 
     // CSS class for glowing border
     const SELECTED_CLASS = 'ibd-selected-thumb';
-    const UI_CONTAINER_ID = 'ibd-ui-container';
+    const UI_CONTAINER_ID = 'container-4bd';
 
     // Fetching progress: listen for progress updates from background
     chrome.runtime.onMessage.addListener((message) => {
@@ -187,7 +187,6 @@
             notificationDiv.style.top = '';
             notificationDiv.style.bottom = `calc(10% + ${totalButtons * buttonHeight}px + 8px)`;
         }
-        notificationDiv.style.right = '32px';
         if (!notificationDiv.parentNode) {
             ibdContainer.appendChild(notificationDiv);
         }
@@ -465,14 +464,29 @@
 
     // Helper: Double-click to select all
     function onThumbDoubleClick(e) {
-        // Select all images
-        getAllThumbs().forEach(thumb => {
-            const url = thumb.href;
-            if (!selected.has(url)) {
-                selected.add(url);
-                thumb.classList.add(SELECTED_CLASS);
-            }
-        });
+        // Only act if the configured modifier key is pressed
+        if (
+            (modifierKey === 'alt' && !e.altKey) ||
+            (modifierKey === 'ctrl' && !e.ctrlKey) ||
+            (modifierKey === 'shift' && !e.shiftKey) ||
+            (modifierKey === 'meta' && !e.metaKey)
+        ) {
+            return;
+        }
+
+        const allThumbs = getAllThumbs();
+        const allUrls = allThumbs.map(thumb => thumb.href);
+        const allSelected = allUrls.every(url => selected.has(url));
+
+        if (allSelected) {
+            // Unselect all
+            selected.clear();
+            allThumbs.forEach(thumb => thumb.classList.remove(SELECTED_CLASS));
+        } else {
+            // Select all
+            allUrls.forEach(url => selected.add(url));
+            allThumbs.forEach(thumb => thumb.classList.add(SELECTED_CLASS));
+        }
         updateButtonVisibility();
     }
 
